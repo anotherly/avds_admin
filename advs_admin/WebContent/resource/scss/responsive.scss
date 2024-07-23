@@ -1,0 +1,98 @@
+@charset 'utf-8';
+@import 'mixin';
+@import '../../node_modules/@euid/scss-mixins';
+@import '../../node_modules/flexbox-grid-mixins/sass/flexbox-grid-mixins';
+
+//plug-in
+$default-grid-columns: 12;
+$default-grid-gutter: 10px;
+
+//custom
+/* ========== reponsive =========== */
+/*
+* xs: 576px,// Small screen / phone
+* sm: 768px,// Medium screen / tablet
+* md: 1024px,// Large screen / desktop
+* lg: 1280px,// Extra large screen / wide desktop
+* ml: 1400px,// middle screen
+* xl: 1600px,
+* up:min-width / down:max-width / only:(min-width,max-width)
+*/
+@include media-breakpoint-up(n-xl){
+    .container{
+        width:100%;
+    }
+    .grids {
+        @include grid($gutter: $default-grid-gutter);
+    
+        @for $i from 1 through $default-grid-columns {
+            > .grids__col-#{$i} {
+                @include grid-col($col: $i, $grid-columns: $default-grid-columns, $gutter: $default-grid-gutter);
+            }
+        }
+        &-bottom{
+            //width: 100%;
+            &.grids {
+                > .grids{
+                    &__col-6{
+                        width: calc(50% - 10px);
+                        flex:none;
+                    }
+                }
+            }
+        }
+    }
+    // .lay{
+    //     &-boxItem{
+    //         &--index{
+    //             @at-root{
+    //                 &.grids{
+    //                     &__col-2{
+    //                         flex:0 0 calc(19.6666% - 10px)
+    //                     }
+    //                     &__col-6{
+    //                         flex:0 0 calc(50% - 10px)
+    //                     }
+    //                     &__col-4{
+    //                         flex:0 0 calc(30.3333% - 10px)
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+}
+@include media-breakpoint-down(n-xl){
+    .container{
+        width:1600px;
+    }
+    .content{
+        &.lnb-open{
+            .lnb-wrap{
+                flex:0 0 200px;
+            }
+            .content__inner{
+                flex:0 0 100%;
+            }
+        }
+    }
+    .lay{
+        &-box{
+            &-wrap{
+                @include flex-c(row wrap);
+                @include margin(l -10 t -10);
+                &.grids-bottom{
+                    margin-top: 0px
+                }
+            }
+            &Item{
+                @include margin(l 10 t 10);
+            }
+        }
+        &-txt{
+            &Item{
+                @include margin(l 10 t 10 b 10);
+            }
+        }
+    }
+}

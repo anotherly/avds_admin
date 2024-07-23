@@ -1,0 +1,15 @@
+@charset 'utf-8';
+@import 'mixin';
+@import '../../node_modules/@euid/scss-mixins';
+@import '../../node_modules/flexbox-grid-mixins/sass/flexbox-grid-mixins';
+
+.boxItem{
+    &__reset{
+        @include margin(l auto);
+        transform:rotate(0);
+        &.fn-reset{
+            transform:rotate(360deg);
+            transition: all 1s ease(out-expo);
+        }
+    }
+}

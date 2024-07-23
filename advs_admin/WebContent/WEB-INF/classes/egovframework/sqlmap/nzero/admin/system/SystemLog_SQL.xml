@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SystemLog">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="SystemLogDAO.selectSystemLogList" parameterClass="paramMap" resultClass="egovMap">
+		/* SystemLogDAO.selectSystemLogList */
+		SELECT LOG_ID,
+		       REQUESTER_ID,
+		       TO_CHAR(ISSUE_DATE, 'YYYY-MM-DD HH24:MI') AS ISSUE_DATE,
+		       SERVICE_NM,
+		       METHOD_NM,
+		       FN_CT_GET_CODE_NAME('process_cd', PROCESS_CD) AS PROCESS_CD,
+		       PROCESS_TIME,
+		       REQUESTER_IP
+		  FROM TB_CM_HT_LOG
+		 WHERE 1=1
+		   AND ISSUE_DATE BETWEEN TO_DATE(#stdate#,'YYYY-MM-DD') AND TO_DATE(#eddate#,'YYYY-MM-DD')
+		<isNotEmpty property="sKeyword">
+		   AND SERVICE_NM LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>
+		 ORDER BY ISSUE_DATE DESC		   
+	</select>
+		
+</sqlMap>

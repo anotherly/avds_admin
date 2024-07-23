@@ -1,0 +1,167 @@
+.d-flex {
+  display: -webkit-box;
+  display: flex;
+  -ms-display: flexbox;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+}
+
+.align-center {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+.mt-20 {
+  margin-top: 20px;
+}
+.mt-30 {
+  margin-top: 30px;
+}
+.mt-40 {
+  margin-top: 40px;
+}
+.mt-50 {
+  margin-top: 50px;
+}
+.mb-10 {
+  margin-bottom: 10px;
+}
+.ml-10 {
+  margin-left: 10px;
+}
+.ml-20 {
+  margin-left: 20px;
+}
+
+.p-10 {
+  padding: 10px;
+}
+.p-20 {
+  padding: 20px;
+}
+
+.bgc--cultured {
+  background-color: #f7f8fa;
+}
+.bgc--lightNavy {
+  background-color: #104f92;
+}
+.bgc--greenBlue {
+  background-color: #2867ab;
+}
+.bgc--steelBlue {
+  background-color: #387dc6;
+}
+
+.border-0 {
+  border: 0;
+}
+.border-none {
+  border: none;
+}
+
+.ui-listUl li {
+  position: relative;
+}
+.ui-listUl--bar li::before {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  background-color: #a3a8b3;
+  content: "";
+}
+
+.f-bold {
+  font-weight: bold;
+}
+
+.el-tit-1 {
+  font-size: 1.75rem;
+}
+.el-tit-2 {
+  font-size: 1.625rem;
+}
+.el-tit-3 {
+  font-size: 1.5rem;
+}
+.el-tit-4 {
+  font-size: 1.375rem;
+}
+.el-tit-5 {
+  font-size: 1.25rem;
+}
+.el-tit-6 {
+  font-size: 1.125rem;
+}
+.el-txt-1 {
+  font-size: 1.375rem;
+}
+.el-txt-2 {
+  font-size: 1.3125rem;
+}
+.el-txt-3 {
+  font-size: 1.25rem;
+}
+.el-txt-4 {
+  font-size: 1.1875rem;
+}
+.el-txt-5 {
+  font-size: 1.125rem;
+}
+.el-txt-6 {
+  font-size: 1.0625rem;
+}
+.el-txt-7 {
+  font-size: 1rem;
+}
+.el-txt-8 {
+  font-size: 0.9375rem;
+}
+.el-weight-1 {
+  font-weight: 100;
+}
+.el-weight-2 {
+  font-weight: 200;
+}
+.el-weight-3 {
+  font-weight: 300;
+}
+.el-weight-4 {
+  font-weight: 400;
+}
+.el-weight-5 {
+  font-weight: 500;
+}
+.el-weight-6 {
+  font-weight: 600;
+}
+.el-weight-7 {
+  font-weight: 700;
+}
+.el-underline {
+  padding-bottom: 2px;
+  border-bottom: 1px solid #000;
+}
+.el-underline:hover {
+  font-weight: 600;
+}
+
+*[class^=el-txt] {
+  font-weight: 500;
+}
+
+.ta-l {
+  text-align: left;
+}
+.ta-c {
+  text-align: center;
+}
+.ta-r {
+  text-align: right;
+}

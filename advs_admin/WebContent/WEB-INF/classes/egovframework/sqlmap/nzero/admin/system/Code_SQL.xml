@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Code">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="CodeDAO.selectCodeComboBox" parameterClass="paramMap" resultClass="egovMap">
+		/* CodeDAO.selectCodeComboBox */
+		SELECT CODE_CD
+			 , CODE_DETL_CD
+			 , CODE_DETL_NM
+			 , REF_VAL1
+			 , REF_VAL2
+			 , REF_VAL3
+			 , DISP_ORDR
+			 , USE_YN
+		  FROM TB_CM_CT_DETAILCODE
+		 WHERE CODE_CD = #sCodeCd#
+		   AND USE_YN = #sUseYn#
+		<isNotEmpty prepend="AND" property="sRefVal1">
+		   REF_VAL1 = #sRefVal1#
+		</isNotEmpty>
+	     ORDER BY CODE_CD, DISP_ORDR, CODE_DETL_CD
+	</select>
+	
+	<select id="CodeDAO.selectCodeMastList" parameterClass="paramMap" resultClass="egovMap">
+		/* CodeDAO.selectCodeMastList */
+		SELECT CODE_CD
+		     , CODE_NM
+		     , CODE_DESC
+		     , REF_VAL1_DESC
+		     , REF_VAL2_DESC
+		     , REF_VAL3_DESC
+		     , REF_VAL4_DESC
+		     , NOTE
+		     , USE_YN
+		  FROM TB_CM_CT_COMMONCODE
+		 WHERE 1 = 1
+		<isNotEmpty prepend="AND" property="sCodeCd">
+		   CODE_CD = #sCodeCd#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sCodeNm">
+		   CODE_NM LIKE '%'||#sCodeNm#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sUseYn">
+		   USE_YN = #sUseYn#
+		</isNotEmpty>
+		 ORDER BY CODE_CD
+	</select>
+	
+	<insert id="CodeDAO.insertCodeMast">
+		/* CodeDAO.insertCodeMast */
+		INSERT INTO TB_CM_CT_COMMONCODE
+		( CODE_CD, CODE_NM, CODE_DESC, REF_VAL1_DESC, REF_VAL2_DESC, REF_VAL3_DESC, REF_VAL4_DESC, NOTE, USE_YN )
+		VALUES
+		( #codeCd#, #codeNm#, #codeDesc#, #refVal1Desc#, #refVal2Desc#, #refVal3Desc#, #refVal4Desc#, #note#, #useYn# )
+	</insert>
+	
+	<update id="CodeDAO.updateCodeMast">
+		/* CodeDAO.updateCodeMast */
+		UPDATE TB_CM_CT_COMMONCODE
+		   SET CODE_NM       = #codeNm#
+		     , CODE_DESC     = #codeDesc#
+		     , REF_VAL1_DESC = #refVal1Desc#
+		     , REF_VAL2_DESC = #refVal2Desc#
+		     , REF_VAL3_DESC = #refVal3Desc#
+		     , REF_VAL4_DESC = #refVal4Desc#
+		     , NOTE          = #note#
+		     , USE_YN        = #useYn#
+		 WHERE CODE_CD = #codeCd#
+	</update>
+	
+	<delete id="CodeDAO.deleteCodeMast">
+		/* CodeDAO.deleteCodeMast */
+		DELETE FROM TB_CM_CT_COMMONCODE
+		 WHERE CODE_CD = #codeCd#
+	</delete>
+	
+	<select id="CodeDAO.selectCodeDetlList" parameterClass="paramMap" resultClass="egovMap">
+		/* CodeDAO.selectCodeDetlList */
+		SELECT CODE_CD
+		     , CODE_DETL_CD
+		     , CODE_DETL_NM
+		     , REF_VAL1
+		     , REF_VAL2
+		     , REF_VAL3
+		     , DISP_ORDR
+		     , USE_YN
+		  FROM TB_CM_CT_DETAILCODE
+		 WHERE CODE_CD = #codeCdDetl#
+		<isNotEmpty prepend="AND" property="codeDetlCd">
+		   CODE_DETL_CD = #codeDetlCd#
+		</isNotEmpty>
+		 ORDER BY CODE_CD, DISP_ORDR, CODE_DETL_CD
+	</select>
+	
+	<insert id="CodeDAO.insertCodeDetl">
+		/* CodeDAO.insertCodeDetl */
+		INSERT INTO TB_CM_CT_DETAILCODE
+		( CODE_CD, CODE_DETL_CD, CODE_DETL_NM, REF_VAL1, REF_VAL2, REF_VAL3, DISP_ORDR, USE_YN )
+		VALUES
+		( #codeCdDetl#, #codeDetlCd#, #codeDetlNm#, #refVal1#, #refVal2#, #refVal3#, #dispOrdr#, #useYnDetl# )
+	</insert>
+	
+	<update id="CodeDAO.updateCodeDetl">
+		/* CodeDAO.updateCodeDetl */
+		UPDATE TB_CM_CT_DETAILCODE
+		   SET CODE_DETL_NM = #codeDetlNm#
+		     , REF_VAL1     = #refVal1#
+		     , REF_VAL2     = #refVal2#
+		     , REF_VAL3     = #refVal3#
+		     , DISP_ORDR    = #dispOrdr#
+		     , USE_YN       = #useYnDetl#
+		 WHERE CODE_CD      = #codeCdDetl#
+		   AND CODE_DETL_CD = #codeDetlCd#
+	</update>
+	
+	<delete id="CodeDAO.deleteCodeDetl">
+		/* CodeDAO.deleteCodeDetl */
+		DELETE FROM TB_CM_CT_DETAILCODE
+		 WHERE CODE_CD      = #codeCdDetl#
+		   AND CODE_DETL_CD = #codeDetlCd#
+	</delete>
+	
+	<select id="CodeDAO.selectCodeExcelList" parameterClass="paramMap" resultClass="egovMap">
+		/* CodeDAO.selectCodeExcelList */
+		SELECT A.CODE_CD, A.CODE_NM, A.REF_VAL1_DESC, A.REF_VAL2_DESC, A.REF_VAL3_DESC, A.REF_VAL4_DESC, A.NOTE, A.USE_YN
+		     , B.CODE_DETL_CD, B.CODE_DETL_NM, B.REF_VAL1, B.REF_VAL2, B.REF_VAL3, B.DISP_ORDR, B.USE_YN AS USE_YN_DETL
+		  FROM TB_CM_CT_COMMONCODE A
+		  LEFT OUTER JOIN TB_CM_CT_DETAILCODE B
+		    ON A.CODE_CD = B.CODE_CD
+		 WHERE 1 = 1
+		<isNotEmpty prepend="AND" property="sCodeCd">
+		   A.CODE_CD = #sCodeCd#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sCodeNm">
+		   A.CODE_NM LIKE '%'||#sCodeNm#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sUseYn">
+		   A.USE_YN = #sUseYn#
+		</isNotEmpty>
+		 ORDER BY CODE_CD, DISP_ORDR, CODE_DETL_CD
+	</select>
+	
+</sqlMap>

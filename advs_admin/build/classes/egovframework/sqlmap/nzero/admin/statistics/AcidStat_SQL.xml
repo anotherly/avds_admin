@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AcidStat">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="AcidStatDAO.selectMonTemp" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonTemp */
+		SELECT TRN,
+		       SUM(CASE SMON  WHEN '01' THEN  ACNT  ELSE '' END) AS M01,
+			   SUM(CASE SMON  WHEN '02' THEN  ACNT  ELSE '' END) AS M02,
+			   SUM(CASE SMON  WHEN '03' THEN  ACNT  ELSE '' END) AS M03,
+			   SUM(CASE SMON  WHEN '04' THEN  ACNT  ELSE '' END) AS M04,
+			   SUM(CASE SMON  WHEN '05' THEN  ACNT  ELSE '' END) AS M05,
+			   SUM(CASE SMON  WHEN '06' THEN  ACNT  ELSE '' END) AS M06,
+			   SUM(CASE SMON  WHEN '07' THEN  ACNT  ELSE '' END) AS M07,
+			   SUM(CASE SMON  WHEN '08' THEN  ACNT  ELSE '' END) AS M08,
+			   SUM(CASE SMON  WHEN '09' THEN  ACNT  ELSE '' END) AS M09,
+			   SUM(CASE SMON  WHEN '10' THEN  ACNT  ELSE '' END) AS M10,
+			   SUM(CASE SMON  WHEN '11' THEN  ACNT  ELSE '' END) AS M11,
+			   SUM(CASE SMON  WHEN '12' THEN  ACNT  ELSE '' END) AS M12,
+			   SUM(ACNT) AS TOT
+		  FROM (
+		        SELECT TMP_RACE_NUMBER AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, ACC_CNT AS ACNT
+		          FROM TB_ST_HT_TEMP_AUTO_MON
+		         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+				   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+				   AND STND_MON LIKE CONCAT(#sDate#, '%')		           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="AcidStatDAO.selectMonTempChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonTempChart */
+        SELECT TMP_RACE_NUMBER AS TRN, DATE_FORMAT(DATE_FORMAT(STND_MON,'%Y%m'),'%m')||'월' AS STERM, ACC_CNT AS ACNT
+          FROM TB_ST_HT_TEMP_AUTO_MON
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		   AND STND_MON LIKE CONCAT(#sDate#, '%') 
+		 ORDER BY STERM, TRN
+	</select>	
+	
+	<select id="AcidStatDAO.selectMonTempDist" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonTempDist */
+		SELECT TRN,
+		       SUM(CASE SMON WHEN '01' THEN ACNT ELSE '' END) AS M01, SUM(CASE SMON WHEN '02' THEN ACNT ELSE '' END) AS M02,
+		       SUM(CASE SMON WHEN '03' THEN ACNT ELSE '' END) AS M03, SUM(CASE SMON WHEN '04' THEN ACNT ELSE '' END) AS M04,
+		       SUM(CASE SMON WHEN '05' THEN ACNT ELSE '' END) AS M05, SUM(CASE SMON WHEN '06' THEN ACNT ELSE '' END) AS M06,
+		       SUM(CASE SMON WHEN '07' THEN ACNT ELSE '' END) AS M07, SUM(CASE SMON WHEN '08' THEN ACNT ELSE '' END) AS M08,
+		       SUM(CASE SMON WHEN '09' THEN ACNT ELSE '' END) AS M09, SUM(CASE SMON WHEN '10' THEN ACNT ELSE '' END) AS M10,
+		       SUM(CASE SMON WHEN '11' THEN ACNT ELSE '' END) AS M11, SUM(CASE SMON WHEN '12' THEN ACNT ELSE '' END) AS M12,
+		       SUM(ACNT) AS TOT
+		  FROM (
+		        SELECT TMP_RACE_NUMBER AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, ACC_AUTO_DIST AS ACNT
+		          FROM TB_ST_HT_TEMP_AUTO_MON
+		         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+				   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+				   AND STND_MON LIKE CONCAT(#sDate#, '%')		           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="AcidStatDAO.selectMonTempDistChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonTempDistChart */
+        SELECT TMP_RACE_NUMBER AS TRN, DATE_FORMAT(DATE_FORMAT(STND_MON,'%Y%m'),'%m')||'월' AS STERM, ACC_AUTO_DIST AS ACNT
+          FROM TB_ST_HT_TEMP_AUTO_MON
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		   AND STND_MON LIKE CONCAT(#sDate#, '%')		           
+		 ORDER BY STERM, TRN
+	</select>	
+	
+	<select id="AcidStatDAO.selectMonUser" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonUser */
+		SELECT TRN,
+		       SUM(CASE SMON WHEN '01' THEN ACNT ELSE '' END) AS M01, SUM(CASE SMON WHEN '02' THEN ACNT ELSE '' END) AS M02,
+		       SUM(CASE SMON WHEN '03' THEN ACNT ELSE '' END) AS M03, SUM(CASE SMON WHEN '04' THEN ACNT ELSE '' END) AS M04,
+		       SUM(CASE SMON WHEN '05' THEN ACNT ELSE '' END) AS M05, SUM(CASE SMON WHEN '06' THEN ACNT ELSE '' END) AS M06,
+		       SUM(CASE SMON WHEN '07' THEN ACNT ELSE '' END) AS M07, SUM(CASE SMON WHEN '08' THEN ACNT ELSE '' END) AS M08,
+		       SUM(CASE SMON WHEN '09' THEN ACNT ELSE '' END) AS M09, SUM(CASE SMON WHEN '10' THEN ACNT ELSE '' END) AS M10,
+		       SUM(CASE SMON WHEN '11' THEN ACNT ELSE '' END) AS M11, SUM(CASE SMON WHEN '12' THEN ACNT ELSE '' END) AS M12,
+		       SUM(ACNT) AS TOT
+		  FROM (
+		        SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, ACC_CNT AS ACNT
+		          FROM TB_ST_HT_USER_AUTO_MON
+		         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+				   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+				   AND STND_MON LIKE CONCAT(#sDate#, '%')        
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="AcidStatDAO.selectMonUserChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonUserChart */
+        SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, CONCAT(DATE_FORMAT(STR_TO_DATE(STND_MON, '%Y%m'),'%m'), '월') AS STERM, ACC_CNT AS ACNT
+          FROM TB_ST_HT_USER_AUTO_MON
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		   AND STND_MON LIKE CONCAT(#sDate#, '%')
+		 ORDER BY STERM, TRN
+	</select>	
+	
+	<select id="AcidStatDAO.selectMonUserDist" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonUserDist */
+		SELECT TRN,
+		       SUM(CASE SMON WHEN '01' THEN ACNT ELSE '' END) AS M01, SUM(CASE SMON WHEN '02' THEN ACNT ELSE '' END) AS M02,
+		       SUM(CASE SMON WHEN '03' THEN ACNT ELSE '' END) AS M03, SUM(CASE SMON WHEN '04' THEN ACNT ELSE '' END) AS M04,
+		       SUM(CASE SMON WHEN '05' THEN ACNT ELSE '' END) AS M05, SUM(CASE SMON WHEN '06' THEN ACNT ELSE '' END) AS M06,
+		       SUM(CASE SMON WHEN '07' THEN ACNT ELSE '' END) AS M07, SUM(CASE SMON WHEN '08' THEN ACNT ELSE '' END) AS M08,
+		       SUM(CASE SMON WHEN '09' THEN ACNT ELSE '' END) AS M09, SUM(CASE SMON WHEN '10' THEN ACNT ELSE '' END) AS M10,
+		       SUM(CASE SMON WHEN '11' THEN ACNT ELSE '' END) AS M11, SUM(CASE SMON WHEN '12' THEN ACNT ELSE '' END) AS M12,
+		       SUM(ACNT) AS TOT
+		  FROM (
+		        SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, ACC_AUTO_DIST AS ACNT
+		          FROM TB_ST_HT_USER_AUTO_MON
+		         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+				   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+				   AND STND_MON LIKE CONCAT(#sDate#, '%')           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="AcidStatDAO.selectMonUserDistChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonUserDistChart */
+        SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, CONCAT(DATE_FORMAT(STR_TO_DATE(STND_MON, '%Y%m'),'%m'), '월') AS STERM, ACC_AUTO_DIST AS ACNT
+          FROM TB_ST_HT_USER_AUTO_MON
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		   AND STND_MON LIKE CONCAT(#sDate#, '%')
+		 ORDER BY STERM, TRN
+	</select>	
+	
+	<select id="AcidStatDAO.selectMonRoad" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonRoad */
+		SELECT TRN,
+		       SUM(CASE SMON WHEN '01' THEN ACNT ELSE '' END) AS M01, SUM(CASE SMON WHEN '02' THEN ACNT ELSE '' END) AS M02,
+		       SUM(CASE SMON WHEN '03' THEN ACNT ELSE '' END) AS M03, SUM(CASE SMON WHEN '04' THEN ACNT ELSE '' END) AS M04,
+		       SUM(CASE SMON WHEN '05' THEN ACNT ELSE '' END) AS M05, SUM(CASE SMON WHEN '06' THEN ACNT ELSE '' END) AS M06,
+		       SUM(CASE SMON WHEN '07' THEN ACNT ELSE '' END) AS M07, SUM(CASE SMON WHEN '08' THEN ACNT ELSE '' END) AS M08,
+		       SUM(CASE SMON WHEN '09' THEN ACNT ELSE '' END) AS M09, SUM(CASE SMON WHEN '10' THEN ACNT ELSE '' END) AS M10,
+		       SUM(CASE SMON WHEN '11' THEN ACNT ELSE '' END) AS M11, SUM(CASE SMON WHEN '12' THEN ACNT ELSE '' END) AS M12,
+		       SUM(ACNT) AS TOT
+		  FROM (
+		        SELECT FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, ACC_CNT AS ACNT
+		          FROM TB_ST_HT_ROAD_AUTO_MON
+		         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+				   AND FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+				   AND STND_MON LIKE CONCAT(#sDate#, '%')	           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="AcidStatDAO.selectMonRoadChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonRoadChart */
+        SELECT FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) AS TRN,  CONCAT(DATE_FORMAT(STR_TO_DATE(STND_MON, '%Y%m'),'%m'), '월') AS STERM, ACC_CNT AS ACNT
+          FROM TB_ST_HT_ROAD_AUTO_MON
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		   AND STND_MON LIKE CONCAT(#sDate#, '%')
+		 ORDER BY STERM, TRN
+	</select>	
+	
+	<select id="AcidStatDAO.selectMonWhtr" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonWhtr */
+		SELECT TRN,
+		       SUM(CASE SMON WHEN '01' THEN ACNT ELSE '' END) AS M01, SUM(CASE SMON WHEN '02' THEN ACNT ELSE '' END) AS M02,
+		       SUM(CASE SMON WHEN '03' THEN ACNT ELSE '' END) AS M03, SUM(CASE SMON WHEN '04' THEN ACNT ELSE '' END) AS M04,
+		       SUM(CASE SMON WHEN '05' THEN ACNT ELSE '' END) AS M05, SUM(CASE SMON WHEN '06' THEN ACNT ELSE '' END) AS M06,
+		       SUM(CASE SMON WHEN '07' THEN ACNT ELSE '' END) AS M07, SUM(CASE SMON WHEN '08' THEN ACNT ELSE '' END) AS M08,
+		       SUM(CASE SMON WHEN '09' THEN ACNT ELSE '' END) AS M09, SUM(CASE SMON WHEN '10' THEN ACNT ELSE '' END) AS M10,
+		       SUM(CASE SMON WHEN '11' THEN ACNT ELSE '' END) AS M11, SUM(CASE SMON WHEN '12' THEN ACNT ELSE '' END) AS M12,
+		       SUM(ACNT) AS TOT
+		  FROM (
+		        SELECT FN_CT_GET_CODE_NAME('weather',WEATHER) AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, ACC_CNT AS ACNT
+		          FROM TB_ST_HT_WEATHER_AUTO_MON
+		         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+				   AND FN_CT_GET_CODE_NAME('weather',WEATHER) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+				   AND STND_MON LIKE CONCAT(#sDate#, '%')      
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="AcidStatDAO.selectMonWhtrChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectMonWhtrChart */
+        SELECT FN_CT_GET_CODE_NAME('weather',WEATHER) AS TRN, CONCAT(DATE_FORMAT(STR_TO_DATE(STND_MON, '%Y%m'),'%m'), '월') AS STERM, ACC_CNT AS ACNT
+          FROM TB_ST_HT_WEATHER_AUTO_MON
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('weather',WEATHER) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		   AND STND_MON LIKE CONCAT(#sDate#, '%') 
+		 ORDER BY STERM, TRN
+	</select>	
+	
+	<select id="AcidStatDAO.selectYearTemp" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectYearTemp */
+		WITH PV AS (
+		SELECT TMP_RACE_NUMBER AS TRN, IFNULL(STND_YEAR,-1) AS SYEAR, SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY TMP_RACE_NUMBER, STND_YEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN		  
+	</select>	
+	
+	<select id="AcidStatDAO.selectYearTempChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectYearTempChart */
+		SELECT TMP_RACE_NUMBER AS TRN, CONCAT(STND_YEAR, '년') AS STERM, ACC_CNT AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectYearTempDist" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectYearTempDist */
+		WITH PV AS (
+		SELECT TMP_RACE_NUMBER AS TRN, IFNULL(STND_YEAR,-1) AS SYEAR, SUM(ACC_AUTO_DIST) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY TMP_RACE_NUMBER, STND_YEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN		 	 
+	</select>	
+	
+	<select id="AcidStatDAO.selectYearTempDistChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectYearTempDistChart */
+		SELECT TMP_RACE_NUMBER AS TRN, STND_YEAR||'년' AS STERM, ACC_AUTO_DIST AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectYearUser" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectYearUser */
+		WITH PV AS (
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, IFNULL(STND_YEAR,-1) AS SYEAR, SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY FN_CT_GET_AGENCY_NAME(USER_ID), STND_YEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN		 
+	</select>	
+	
+	<select id="AcidStatDAO.selectYearUserChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectYearUserChart */
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, CONCAT(STND_YEAR, '년') AS STERM, ACC_CNT AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectYearUserDist" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectYearUserDist */
+		WITH PV AS (
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, IFNULL(STND_YEAR,-1) AS SYEAR, SUM(ACC_AUTO_DIST) AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY FN_CT_GET_AGENCY_NAME(USER_ID), STND_YEAR        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN		 
+	</select>	
+	
+	<select id="AcidStatDAO.selectYearUserDistChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectYearUserDistChart */
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, CONCAT(STND_YEAR, '년') AS STERM, ACC_AUTO_DIST AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectYearRoad" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectYearRoad */
+		WITH PV AS (
+		SELECT FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) AS TRN, IFNULL(STND_YEAR,-1) AS SYEAR, SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_ROAD_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD), STND_YEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN 
+	</select>	
+	
+	<select id="AcidStatDAO.selectYearRoadChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectYearRoadChart */
+		SELECT FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) AS TRN, CONCAT(STND_YEAR, '년') AS STERM, ACC_CNT AS ACNT
+		  FROM TB_ST_HT_ROAD_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectYearWhtr" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectYearWhtr */
+		WITH PV AS (
+		SELECT FN_CT_GET_CODE_NAME('weather',WEATHER) AS TRN, IFNULL(STND_YEAR,-1) AS SYEAR, SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_WEATHER_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('weather',WEATHER) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY FN_CT_GET_CODE_NAME('weather',WEATHER), STND_YEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN 
+	</select>	
+	
+	<select id="AcidStatDAO.selectYearWhtrChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectYearWhtrChart */
+		SELECT FN_CT_GET_CODE_NAME('weather',WEATHER) AS TRN, CONCAT(STND_YEAR, '년') AS STERM, ACC_CNT AS ACNT
+		  FROM TB_ST_HT_WEATHER_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('weather',WEATHER) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+		
+		
+	<!-- 반기추가 -->
+	<select id="AcidStatDAO.selectSemiAnnualTemp" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectSemiAnnualTemp */
+		WITH PV AS (
+		SELECT TMP_RACE_NUMBER AS TRN
+					, IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%m'),  LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0')), -1) AS SYEAR
+					, SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY TMP_RACE_NUMBER, SYEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN 
+	</select>	
+	
+	<select id="AcidStatDAO.selectSemiAnnualTempChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectSemiAnnualTempChart */
+		SELECT TMP_RACE_NUMBER AS TRN, IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%Y'),  CASE WHEN LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0') = '01' THEN '전반기' ELSE '후반기' END), -1) AS STERM
+			, SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#
+		 GROUP BY TMP_RACE_NUMBER, STERM	   		   
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectSemiAnnualTempDist" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectSemiAnnualTempDist */
+		WITH PV AS (
+		SELECT TMP_RACE_NUMBER AS TRN, IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%Y'),  LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0')), -1) AS SYEAR
+			, SUM(ACC_AUTO_DIST) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY TMP_RACE_NUMBER, SYEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN	 
+	</select>	
+	
+	<select id="AcidStatDAO.selectSemiAnnualTempDistChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectSemiAnnualTempDistChart */
+		SELECT TMP_RACE_NUMBER AS TRN
+				   , IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%Y'),  CASE WHEN LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0') = '01' THEN '전반기' ELSE '후반기' END), -1) AS STERM
+			       , SUM(ACC_AUTO_DIST) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#
+		 GROUP BY TMP_RACE_NUMBER, STERM	   		   
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectSemiAnnualUser" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectSemiAnnualUser */
+		WITH PV AS (
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN
+				   , IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%Y'),  LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0')), -1) AS SYEAR
+			       , SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY FN_CT_GET_AGENCY_NAME(USER_ID), SYEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN		 
+	</select>	
+	
+	<select id="AcidStatDAO.selectSemiAnnualUserChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectSemiAnnualUserChart */
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN
+				  , IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%Y'),  CASE WHEN LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0') = '01' THEN '전반기' ELSE '후반기' END), -1) AS STERM
+				  , SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#
+		 GROUP BY USER_ID, STERM	   		   
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectSemiAnnualUserDist" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectSemiAnnualUserDist */
+		WITH PV AS (
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN
+				   , IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%Y'),  LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0')), -1) AS SYEAR
+				   , SUM(ACC_AUTO_DIST) AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY FN_CT_GET_AGENCY_NAME(USER_ID), SYEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN 
+	</select>	
+	
+	<select id="AcidStatDAO.selectSemiAnnualUserDistChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectSemiAnnualUserDistChart */
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN
+				   , IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%Y'),  CASE WHEN LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0') = '01' THEN '전반기' ELSE '후반기' END), -1) AS STERM
+				   , SUM(ACC_AUTO_DIST) AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#
+		 GROUP BY USER_ID, STERM	   		   
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectSemiAnnualRoad" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectSemiAnnualRoad */
+		WITH PV AS (
+		SELECT FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) AS TRN
+				   , IFNULL(CONCAT(SUBSTR(stnd_mon, 1, 4),  CASE WHEN SUBSTR(stnd_mon, 5, 2) BETWEEN '01' AND '06' THEN '01' ELSE '02' END),-1) AS SYEAR
+				   , SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_ROAD_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#
+		   AND stnd_mon not like '____00' <!-- 해당 테이블만 월이 00인 데이터 있으므로 제외 -->
+		 GROUP BY FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD), SYEAR        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN		 
+	</select>	
+	
+	<select id="AcidStatDAO.selectSemiAnnualRoadChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectSemiAnnualRoadChart */
+		SELECT FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) AS TRN
+				   , IFNULL(CONCAT(substring(stnd_mon, 1, 4), CASE WHEN SUBSTRING(stnd_mon, 5, 2) BETWEEN '01' AND '06' THEN '전반기' ELSE '후반기' END),-1) AS STERM
+				   , SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_ROAD_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('road_type_cd',ROAD_TYPE_CD) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#
+		   AND stnd_mon not like '____00' <!-- 해당 테이블만 월이 00인 데이터 있으므로 제외 -->
+		 GROUP BY ROAD_TYPE_CD, STERM	   		   
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="AcidStatDAO.selectSemiAnnualWhtr" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* AcidStatDAO.selectSemiAnnualWhtr */
+		WITH PV AS (
+		SELECT FN_CT_GET_CODE_NAME('weather',WEATHER) AS TRN
+				   , IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%Y'),  LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0')), -1) AS SYEAR
+				   , SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_WEATHER_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('weather',WEATHER) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#    
+		   AND stnd_mon not like '____00' <!-- 해당 테이블만 월이 00인 데이터 있으므로 제외 -->
+		 GROUP BY FN_CT_GET_CODE_NAME('weather',WEATHER), SYEAR	       
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , SUM(ACNT) AS TOT
+		  FROM PV
+		 WHERE TRN IS NOT NULL
+		  GROUP BY TRN
+		 ORDER BY TRN 
+	</select>	
+	
+	<select id="AcidStatDAO.selectSemiAnnualWhtrChart" parameterClass="paramMap" resultClass="egovMap">
+		/* AcidStatDAO.selectSemiAnnualWhtrChart */
+		SELECT FN_CT_GET_CODE_NAME('weather',WEATHER) AS TRN
+				   , IFNULL(CONCAT(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), '%Y'),  CASE WHEN LPAD(CEIL(DATE_FORMAT(STR_TO_DATE(stnd_mon, '%Y%m'), 'q') /2), 2, '0') = '01' THEN '전반기' ELSE '후반기' END), -1) AS STERM
+				   , SUM(ACC_CNT) AS ACNT
+		  FROM TB_ST_HT_WEATHER_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_CODE_NAME('weather',WEATHER) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#
+		   AND stnd_mon not like '____00' <!-- 해당 테이블만 월이 00인 데이터 있으므로 제외 -->
+		 GROUP BY WEATHER, STERM	   		   
+		 ORDER BY STERM, TRN
+	</select>
+					
+		
+		
+</sqlMap>

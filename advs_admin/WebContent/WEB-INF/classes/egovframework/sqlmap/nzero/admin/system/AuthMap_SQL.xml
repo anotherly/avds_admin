@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AuthMap">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="AuthMapDAO.selectAuthMapList" parameterClass="paramMap" resultClass="egovMap">
+		/* AuthMapDAO.selectAuthMapList */
+		SELECT AUTH_ID
+		     , MENU_ID
+	      FROM TB_CM_MENU_MAP
+	     WHERE AUTH_ID = #authId#
+         ORDER BY AUTH_ID, MENU_ID
+	</select>
+	
+	<delete id="AuthMapDAO.deleteAuthMap">
+		/* AuthMapDAO.deleteAuthMap */
+		DELETE FROM TB_CM_MENU_MAP
+		 WHERE AUTH_ID = #authId#
+	</delete>
+	
+	<insert id="AuthMapDAO.insertAuthMap">
+		/* AuthMapDAO.insertAuthMap */
+		INSERT INTO TB_CM_MENU_MAP
+		( AUTH_ID, MENU_ID )
+		VALUES
+		( #authId#, #menuId# )
+	</insert>
+	
+</sqlMap>

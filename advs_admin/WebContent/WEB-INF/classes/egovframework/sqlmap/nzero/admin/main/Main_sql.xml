@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Main">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<!-- 임시등록번호 갯수 -->
+   <select id="MainDAO.selectTempOperTotCnt" parameterClass="java.util.HashMap" resultClass="int">
+      SELECT COUNT(*) selcnt
+        FROM TB_CM_HT_TEMPOPER E
+       WHERE 1=1
+         AND E.APPOR_STATUS = '102'
+   </select>
+
+   <!-- 주행거리 정보 -->
+   <select id="MainDAO.selectDrivingInfo" parameterClass="java.util.HashMap" resultClass="egovMap">
+    SELECT NVL(TO_CHAR(SUM(A.Total_Driving_Dist), '999,999,999,999,999'),'-') AS TOTAL_VIEW
+          ,NVL(TO_CHAR(SUM(A.Auto_Driving_Dist), '999,999,999,999,999'),'-') AS AUTO_VIEW
+          ,NVL(TO_CHAR(SUM(A.Nomal_Driving_Dist), '999,999,999,999,999'),'-') AS NOMAL_VIEW
+      FROM TB_CL_HT_DRIVING A
+     WHERE 1=1
+   </select>
+
+   <!-- 데이터 건수 -->
+   <select id="MainDAO.selectDataTotCnt" parameterClass="java.util.HashMap" resultClass="int">
+      SELECT COUNT(*) totcnt
+        FROM TB_WEB_HT_BOARD A
+   </select>
+
+   <!-- 데이터 용량 -->
+   <select id="MainDAO.selectDataTotVolume" parameterClass="java.util.HashMap" resultClass="String">
+      SELECT TO_CHAR(ROUND(SUM(A.FILE_SIZE)/1024/1024/1024,1), '999,999,999,999,990.9') AS FILE_SIZE
+        FROM TB_WEB_HT_APPEND A
+   </select>
+
+	<!-- 데이터 사용현황 업다운 건수 -->
+	<select id="MainDAO.selectUpDnStatus" parameterClass="java.util.HashMap" resultClass="egovMap">
+		SELECT
+			  (SELECT COUNT(*)
+				 FROM TB_WEB_HT_BOARD A, TB_WEB_HT_BBS B
+				WHERE A.BBS_SEQ = B.BBS_SEQ
+				  AND B.BBS_GROUP_SEQ = 2000
+				  AND A.REG_DATE BETWEEN TRUNC(sysdate, 'iw')-7 AND TRUNC(sysdate, 'iw')-1
+			  ) AS BU,
+			  (SELECT COUNT(*)
+				 FROM TB_WEB_HT_DOWNLOAD A
+				WHERE A.REG_DATE BETWEEN TRUNC(sysdate, 'iw')-7 AND TRUNC(sysdate, 'iw')-1
+			  ) AS BD,
+			  (SELECT COUNT(*)
+				 FROM TB_WEB_HT_BOARD A, TB_WEB_HT_BBS B
+				WHERE A.BBS_SEQ = B.BBS_SEQ
+				  AND B.BBS_GROUP_SEQ = 2000
+				  AND A.REG_DATE BETWEEN TRUNC(sysdate, 'iw') AND TRUNC(sysdate, 'iw')+7
+			  ) AS NU,
+			  (SELECT COUNT(*)
+				 FROM TB_WEB_HT_DOWNLOAD A
+				WHERE A.REG_DATE BETWEEN TRUNC(sysdate, 'iw') AND TRUNC(sysdate, 'iw')+7
+			  ) AS ND
+		 FROM DUAL 
+	</select>
+	
+	<!-- 데이터 사용현황 업로드 건수 목록 -->
+	<select id="MainDAO.selectUploadCnt" parameterClass="java.util.HashMap" resultClass="egovMap">
+		SELECT ROWNUM AS RNUM, REG_ID, UP_CNT
+		  FROM (SELECT A.REG_ID, COUNT(A.BBS_SEQ) AS UP_CNT
+		          FROM TB_WEB_HT_BOARD A, TB_WEB_HT_BBS B
+		         WHERE A.BBS_SEQ = B.BBS_SEQ
+		           AND B.BBS_GROUP_SEQ = 2000
+		           AND A.REG_DATE > SYSDATE-7
+		         GROUP BY A.REG_ID
+		         ORDER BY UP_CNT DESC)
+	</select>
+	
+	<!-- 사고발생 건수 -->
+	<select id="MainDAO.selectAccStatus" parameterClass="java.util.HashMap" resultClass="egovMap">
+		SELECT
+		      (SELECT NVL(SUM(AUTO_DRIVING_ACC_CNT),0)
+		         FROM TB_ST_HT_TEMP_AUTO_DAY A
+		        WHERE A.STND_DAY BETWEEN TO_CHAR(TRUNC(sysdate, 'iw')-7, 'YYYYMMDD') AND TO_CHAR(TRUNC(sysdate, 'iw')-1, 'YYYYMMDD')
+		      ) AS BU,
+		      (SELECT NVL(SUM(NOMAL_DRIVING_ACC_CNT),0)
+		         FROM TB_ST_HT_TEMP_AUTO_DAY A
+		        WHERE A.STND_DAY BETWEEN TO_CHAR(TRUNC(sysdate, 'iw')-7, 'YYYYMMDD') AND TO_CHAR(TRUNC(sysdate, 'iw')-1, 'YYYYMMDD')
+		      ) AS BD,
+		      (SELECT NVL(SUM(AUTO_DRIVING_ACC_CNT),0)
+		         FROM TB_ST_HT_TEMP_AUTO_DAY A
+		        WHERE A.STND_DAY BETWEEN TO_CHAR(TRUNC(sysdate, 'iw'), 'YYYYMMDD') AND TO_CHAR(TRUNC(sysdate, 'iw')+7, 'YYYYMMDD')
+		      ) AS NU,
+		      (SELECT NVL(SUM(NOMAL_DRIVING_ACC_CNT),0)
+		         FROM TB_ST_HT_TEMP_AUTO_DAY A
+		        WHERE A.STND_DAY BETWEEN TO_CHAR(TRUNC(sysdate, 'iw'), 'YYYYMMDD') AND TO_CHAR(TRUNC(sysdate, 'iw')+7, 'YYYYMMDD')
+		      ) AS ND
+		 FROM DUAL 		 
+	</select>
+	
+	<!-- 자율주행 사고발생 건수 목록 -->
+	<select id="MainDAO.selectAccList" parameterClass="java.util.HashMap" resultClass="egovMap">
+		SELECT ROWNUM AS RNUM, USER_ID, ACC_CNT        
+		  FROM (SELECT FN_CT_GET_AGENCY_NAME(A.USER_ID) AS USER_ID, NVL(SUM(A.AUTO_DRIVING_ACC_CNT),0) AS ACC_CNT
+		          FROM TB_ST_HT_USER_AUTO_DAY A
+		         WHERE A.STND_DAY > TO_CHAR(SYSDATE-7, 'YYYYMMDD')
+		         GROUP BY A.USER_ID
+		         ORDER BY ACC_CNT DESC)		 
+	</select>	
+	
+	<!-- 통계현황그래프 -->
+	<select id="MainDAO.selectChart" parameterClass="java.util.HashMap" resultClass="egovMap">
+	<![CDATA[
+		SELECT MON.M, NVL(UP.UP_CNT,0) AS UP_CNT, NVL(DN.DN_CNT,0) AS DN_CNT, NVL(AC.ACC_CNT,0) AS ACC_CNT
+		  FROM (SELECT TO_CHAR(ADD_MONTHS(ADD_MONTHS(SYSDATE, -5), LEVEL - 1), 'YYYY-MM') AS M
+		          FROM DUAL
+		        CONNECT BY LEVEL <= MONTHS_BETWEEN(SYSDATE, ADD_MONTHS(SYSDATE, -5)) + 1) MON,
+		       (SELECT TO_CHAR(A.REG_DATE,'YYYY-MM') AS M, SUM(A.B_SEQ) AS UP_CNT
+		          FROM TB_WEB_HT_BOARD A, TB_WEB_HT_BBS B
+		         WHERE A.BBS_SEQ = B.BBS_SEQ
+		           AND B.BBS_GROUP_SEQ = 2000
+		           AND A.REG_DATE > ADD_MONTHS(TRUNC(SYSDATE,'MM'),-5)
+		         GROUP BY TO_CHAR(A.REG_DATE,'YYYY-MM')) UP,
+		       (SELECT TO_CHAR(A.REG_DATE,'YYYY-MM') AS M, SUM(A.B_SEQ) AS DN_CNT
+		          FROM TB_WEB_HT_DOWNLOAD A
+		         WHERE A.REG_DATE > ADD_MONTHS(TRUNC(SYSDATE,'MM'),-5)
+		         GROUP BY TO_CHAR(A.REG_DATE,'YYYY-MM')) DN,
+		       (SELECT SUBSTR(A.STND_MON,1,4)||'-'||SUBSTR(A.STND_MON,5,2) AS M, SUM(AUTO_DRIVING_ACC_CNT) AS ACC_CNT
+		          FROM TB_ST_HT_TEMP_AUTO_MON A
+		         WHERE A.STND_MON > TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE,'MM'),-5),'YYYYMM')     
+		         GROUP BY A.STND_MON) AC
+		 WHERE MON.M = UP.M(+)
+		   AND MON.M = DN.M(+)
+		   AND MON.M = AC.M(+)
+		 ORDER BY MON.M ASC
+	]]>		 	 
+	</select>		
+	
+	<!-- DB 현황 -->
+	<select id="MainDAO.selectDBStatus" parameterClass="java.util.HashMap" resultClass="egovMap">
+	<![CDATA[
+		SELECT A.TABLESPACE_NAME,
+		       ((A.TOTBYTES - B.FREEBYTES) / 1024 / 1024) AS USED,
+		       (B.FREEBYTES / 1024 / 1024) AS FREE
+		  FROM (SELECT TABLESPACE_NAME, SUM(BYTES) TOTBYTES, SUM(BLOCKS) TOTBLOCKS
+		          FROM DBA_DATA_FILES
+		         GROUP BY TABLESPACE_NAME) A,
+		       (SELECT TABLESPACE_NAME, SUM(BYTES) FREEBYTES, SUM(BLOCKS) FREEBLOCKS
+		          FROM DBA_FREE_SPACE
+		         GROUP BY TABLESPACE_NAME) B
+		 WHERE A.TABLESPACE_NAME = B.TABLESPACE_NAME
+		   AND A.TABLESPACE_NAME LIKE '%TS_AVDS%'
+		 ORDER BY A.TABLESPACE_NAME
+	]]>		 	 		 		 
+	</select>	
+</sqlMap>

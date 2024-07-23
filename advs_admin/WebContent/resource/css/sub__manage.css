@@ -1,0 +1,23 @@
+.el-table--approve th {
+  text-align: center;
+}
+.el-table--approve td {
+  text-align: left;
+}
+.el-table--approveList td {
+  text-align: center;
+}
+.el-approve-comp {
+  font-weight: 500;
+  color: #003ba2;
+}
+.el-approve-ask {
+  font-weight: 500;
+  color: #de7b00;
+}
+
+@media (min-width: 1600px) {
+  .el-table--approveList tr:hover > td {
+    background-color: #f7f4ee;
+  }
+}

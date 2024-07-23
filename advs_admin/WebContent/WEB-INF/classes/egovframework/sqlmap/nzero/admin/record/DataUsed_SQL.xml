@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DataUsed">
+
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+
+	<!-- 성과지표 목록 조회 -->
+	<select id="DataUsedDAO.selectDataUsedList" parameterClass="paramMap" resultClass="egovMap">
+    SELECT A.B_SEQ
+          ,A.BBS_SEQ
+          ,(SELECT BBS_NM FROM TB_WEB_HT_BBS WHERE BBS_SEQ = A.BBS_SEQ) AS BBS_NM
+          ,A.B_TITLE
+          ,fn_ct_get_code_name('weather', A.WEATHER ) AS WEATHER_VIEW
+          ,fn_ct_get_code_name('autocar_driving_mode', A.DRIVING_MODE ) as DRIVING_MODE_VIEW
+          ,fn_ct_get_code_name('road_situation', A.ROAD_SITUATION ) AS ROAD_SITUATION_VIEW
+          ,fn_ct_get_code_name('road_type_cd', A.ROAD_TYPE_CD ) AS ROAD_TYPE_CD_VIEW
+          ,fn_ct_get_code_name('act_info_type', A.ACT_INFO_TYPE ) AS ACT_INFO_TYPE_VIEW
+          ,A.VEHICLE_ID
+          ,B.SAVE_NM
+          ,TO_CHAR(ROUND(NVL(B.FILE_SIZE,0)/1024/1024,0),'999,999,999,999,999') || ' MB' AS FILE_SIZE_VIEW
+          ,TO_CHAR(A.REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE_VIEW
+          ,A.REG_ID
+          ,(SELECT USER_NM FROM TB_WEB_IT_USER WHERE USER_ID = A.REG_ID) AS USER_NM
+          ,(SELECT AGENCY_CD FROM TB_WEB_IT_USER WHERE USER_ID = A.REG_ID) AS AGENCY_NAME
+      FROM TB_WEB_HT_BOARD A, TB_WEB_HT_APPEND B
+     WHERE 1=1
+       AND A.B_SEQ = B.B_SEQ
+			<isNotEmpty prepend="AND" property="sBSeq">
+				A.B_SEQ = #sBSeq#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="sTitle">
+				A.B_TITLE LIKE '%'||#sTitle#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="stdate">
+				A.REG_DATE BETWEEN TO_DATE( #stdate# || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_DATE( #eddate# || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+			</isNotEmpty>
+		 ORDER BY A.REG_DATE DESC
+	</select>
+
+	<!-- 성과지표 상세 조회 -->
+	<select id="DataUsedDAO.selectDataUsedDtlList" parameterClass="paramMap" resultClass="egovMap">
+		SELECT DL_ID
+		      ,COUNT(DL_ID) AS CNT 
+		  FROM TB_WEB_HT_DL_RESULT
+		 WHERE 1=1
+			<isNotEmpty prepend="AND" property="sBSeq">
+				B_SEQ = #sBSeq#
+			</isNotEmpty>
+		 GROUP BY DL_ID
+		 ORDER BY DL_ID
+	</select>
+
+
+</sqlMap>

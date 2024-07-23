@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Menu">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="MenuDAO.selectMenuComboBox" parameterClass="paramMap" resultClass="egovMap">
+		/* MenuDAO.selectMenuComboBox */
+		SELECT MENU_ID
+		     , MENU_NM
+		     , MENU_PRNT_ID
+		     , DISP_ORDR
+		  FROM TB_CM_MT_MENU
+		 WHERE MENU_PRNT_ID = '00000'
+		   AND USE_YN = #sUseYn#
+		 ORDER BY DISP_ORDR
+	</select>
+	
+	<select id="MenuDAO.selectMenuList" parameterClass="paramMap" resultClass="egovMap">
+		/* MenuDAO.selectMenuList */
+		SELECT MENU_ID
+		     , MENU_NM
+		     , MENU_PRNT_ID
+		     , DISP_ORDR
+		     , MENU_OBJECT
+		     , MENU_PATH
+		     , MENU_DESC
+		     , ICON_NM
+		     , LEAF_YN
+		     , MENU_LEVEL
+		     , USE_YN
+             , MENU_ID AS ID
+             , MENU_NM AS TEXT
+		     , MENU_PRNT_ID AS PARENT
+		  FROM TB_CM_MT_MENU
+		 WHERE 1 = 1
+		<isNotEmpty prepend="AND" property="sMenuId">
+			MENU_ID = #sMenuId#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sMenuPrntId">
+			(MENU_ID = '00000' OR MENU_ID LIKE SUBSTR(#sMenuPrntId#, 1, 1)||'%')
+		</isNotEmpty>
+		 ORDER BY DISP_ORDR
+	</select>
+	
+	<insert id="MenuDAO.insertMenu">
+		/* MenuDAO.insertMenu */
+		INSERT INTO TB_CM_MT_MENU
+		( MENU_ID, MENU_NM, MENU_PRNT_ID, DISP_ORDR, MENU_OBJECT, MENU_PATH, MENU_DESC, ICON_NM, LEAF_YN, MENU_LEVEL, USE_YN )
+		VALUES
+		( #menuId#, #menuNm#, #menuPrntId#, #dispOrdr#, #menuObject#, #menuPath#, #menuDesc#, #iconNm#, #leafYn#, #menuLevel#, #useYn# )
+	</insert>
+	
+	<update id="MenuDAO.updateMenu">
+		/* MenuDAO.updateMenu */
+		UPDATE TB_CM_MT_MENU
+		   SET MENU_NM      = #menuNm#
+		     , MENU_PRNT_ID = #menuPrntId#
+		     , DISP_ORDR    = #dispOrdr#
+		     , MENU_OBJECT  = #menuObject#
+		     , MENU_PATH    = #menuPath#
+		     , MENU_DESC    = #menuDesc#
+		     , ICON_NM      = #iconNm#
+		     , LEAF_YN      = #leafYn#
+		     , MENU_LEVEL   = #menuLevel#
+		     , USE_YN       = #useYn#
+		 WHERE MENU_ID = #menuId#
+	</update>
+	
+	<delete id="MenuDAO.deleteMenu">
+		/* MenuDAO.deleteMenu */
+		DELETE FROM TB_CM_MT_MENU
+		 WHERE MENU_ID = #menuId#
+	</delete>
+	
+</sqlMap>

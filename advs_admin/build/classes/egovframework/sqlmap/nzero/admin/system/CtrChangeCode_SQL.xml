@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CtrChangeCode">
+	
+	<typeAlias alias="ctrChangeCodeMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="CtrChangeCodeDAO.selectCtrChangeCodeList" parameterClass="ctrChangeCodeMap" resultClass="egovMap">
+		/* CtrChangeCodeDAO.selectCtrChangeCodeList */
+		SELECT A.*
+		      ,DATE_FORMAT(A.UPDATE_DATE, '%Y-%m-%d %H:%i') AS UPDATE_DATE_VIEW
+		      ,DATE_FORMAT(A.REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE_VIEW
+		  FROM TB_CL_HT_CTRCHANGE_CODE A
+		 WHERE 1 = 1
+		<isNotEmpty prepend="AND" property="sCtrChangeCode">
+			A.CTR_CHANGE_CODE = #sCtrChangeCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sCtrChangeNm">
+			A.CTR_CHANGE_NM LIKE CONCAT('%', #sCtrChangeNm#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sUseYn">
+			A.USE_YN = #sUseYn#
+		</isNotEmpty>
+		 ORDER BY A.CTR_CHANGE_CODE
+	</select>
+	
+	<insert id="CtrChangeCodeDAO.insertCtrChangeCode">
+		/* CtrChangeCodeDAO.insertCtrChangeCode */
+		INSERT INTO TB_CL_HT_CTRCHANGE_CODE
+		( CTR_CHANGE_CODE, CTR_CHANGE_NM, CTR_CHANGE_DESC, USE_YN, REG_ID, REG_DATE )
+		VALUES
+		( #ctrChangeCode#, #ctrChangeNm#, #ctrChangeDesc#, #useYn#, #createId#, SYSDATE() )
+	</insert>
+	
+	<update id="CtrChangeCodeDAO.updateCtrChangeCode">
+		/* CtrChangeCodeDAO.updateCtrChangeCode */
+		UPDATE TB_CL_HT_CTRCHANGE_CODE
+		   SET CTR_CHANGE_NM	= #ctrChangeNm#
+		     , CTR_CHANGE_DESC			= #ctrChangeDesc#
+		     , USE_YN		= #useYn#
+		     , UPDATE_ID				= #updateId#
+		     , UPDATE_DATE				= SYSDATE()
+		 WHERE 1 = 1
+			 AND CTR_CHANGE_CODE = #ctrChangeCode#
+	</update>
+	
+	<delete id="CtrChangeCodeDAO.deleteCtrChangeCode">
+		/* CtrChangeCodeDAO.deleteCtrChangeCode */
+		DELETE FROM TB_CL_HT_CTRCHANGE_CODE
+		 WHERE 1 = 1
+			 AND CTR_CHANGE_CODE = #ctrChangeCode#
+	</delete>
+	
+</sqlMap>

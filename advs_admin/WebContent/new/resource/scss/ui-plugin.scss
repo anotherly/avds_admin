@@ -1,0 +1,62 @@
+@charset 'utf-8';
+@import 'mixin';
+@import '../../node_modules/@euid/scss-mixins';
+@import '../../node_modules/flexbox-grid-mixins/sass/flexbox-grid-mixins';
+@import 'lib/simplebar.css';
+
+/** plugin */
+.ui{
+    &-scroller{
+        font-size:0px;
+        &::-webkit-scrollbar{
+            display:none;
+        }
+        .simplebar{
+            &-track{
+                border-radius:10px;
+                .simplebar{
+                    &-scrollbar{
+                        &::before{
+                            top:0;
+                            left:0;
+                            display:block;
+                            width:4px;
+                            height:100%;
+                            opacity: 1;
+                            background-color: #9da8bb;
+                            box-sizing:border-box;
+                        }
+                    }
+                }
+            }
+            &-track{
+                top:50px;
+                right:5px;
+                width:4px;
+                height:calc(100% - 60px);
+                background-color:#dfe3e8;
+                box-sizing:border-box;
+                .simplebar-vertical .simplebar-scrollbar:before{
+                    top:0
+                }
+                &.simplebar-horizontal{
+                    top:98.5%;
+                    width:97%;
+                    height:4px;
+                    right:auto;
+                    left:10px;
+                    .simplebar-scrollbar{
+                        top:0;
+                        right:auto;
+                        width:auto;
+                        height:100%;
+                        &::before{
+                            height:100%;
+                            width:auto;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

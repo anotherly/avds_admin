@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AgcyOff">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<!--오프라인공유 목록 조회 -->
+	<select id="AgcyOffDAO.selectAgcyOffList" parameterClass="paramMap" resultClass="egovMap">
+		/*AgcyOffDAO.selectAgcyOffList*/
+		SELECT
+			 A.DOC_SEQ
+			, A.REQ_ORG
+			, A.BIZR_NO
+			, A.ORG_ADDR
+			, A.DOC_TIT
+			, A.DOC_CNT
+			, A.PRCUSE_MTHD
+			, A.DSR_VST_DT
+			, A.SIGN_YN
+			, A.PRGRS_CD
+			, A.APPCNT
+			, DATE_FORMAT(A.APPCNT_DT, '%Y-%m-%d') APPCNT_DT
+			, A.REGIST_ID
+			, DATE_FORMAT(A.REGIST_DT, '%Y-%m-%d %H:%i') REGIST_DT
+			, A.UPDT_ID
+			, DATE_FORMAT(A.UPDT_DT, '%Y-%m-%d %H:%i') UPDT_DT
+			,CEIL( ROW_NUMBER() OVER (ORDER BY A.DOC_SEQ ASC) ) LISTCNT
+			, CEIL( ROW_NUMBER() OVER (ORDER BY A.DOC_SEQ DESC) / 10 ) AS PAGECNT
+		FROM TB_WEB_HT_OFFLINE A	
+		WHERE 1=1
+		<isNotEmpty prepend="AND" property="sDocTit">
+		A.DOC_TIT LIKE CONCAT('%', #sDocTit#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sDsrVstDt">
+		A.DSR_VST_DT LIKE CONCAT('%', #sDsrVstDt#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sAppcntDt">
+		A.APPCNT_DT LIKE CONCAT('%', #sAppcntDt#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sReqOrg">
+		A.REQ_ORG LIKE CONCAT('%', #sReqOrg#, '%')
+		</isNotEmpty>
+        ORDER BY A.DOC_SEQ DESC 
+	</select>
+	
+</sqlMap>

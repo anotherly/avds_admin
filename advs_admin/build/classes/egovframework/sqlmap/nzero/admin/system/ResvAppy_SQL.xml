@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ResvAppy">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="ResvAppyDAO.selectResvAppyList" parameterClass="paramMap" resultClass="egovMap">
+		/* ResvAppyDAO.selectResvAppyList */
+		SELECT A.*
+		     ,REPLACE(REPLACE(REPLACE(RESERVATION_STATUS,'1','예약신청'),'2','승인완료'),'0','반려') AS RESERV_STATUS
+		     ,DATEDIFF(RETURN_DT,RENT_DT)+1 AS RENT_DAY
+             ,DATE_FORMAT(A.REG_DATE, '%Y-%m-%d') AS REG_DATE_VIEW
+             ,IF((SELECT COUNT(*) FROM TB_CL_HT_CARRESERVATION_FILE B WHERE A.RESERVATION_NUMBER = B.RESERVATION_NUMBER) > 0, 1, 0) AS ATTACHYN
+             ,CEIL( ROW_NUMBER() OVER (ORDER BY A.RESERVATION_NUMBER ASC) ) LISTCNT
+             ,CEIL( ROW_NUMBER() OVER (ORDER BY A.RESERVATION_NUMBER DESC) / 10 ) PAGECNT
+             ,(SELECT B.ATTACH_FILE FROM TB_CL_HT_CARRESERVATION_FILE B WHERE A.RESERVATION_NUMBER = B.RESERVATION_NUMBER) AS RESV_ATTACH_FILE
+         FROM TB_CL_HT_CARRESERVATION A
+        WHERE 1=1
+		   <isNotEmpty prepend="AND" property="rentCarCode">
+		    A.RENT_CAR_CODE LIKE CONCAT('%' , #rentCarCode# , '%')
+		   </isNotEmpty>
+		   <isNotEmpty prepend="AND" property="applyCompanyCode">
+		    A.APPLY_COMPANY_CODE LIKE CONCAT('%' , #applyCompanyCode# , '%')
+		   </isNotEmpty>
+		   <isNotEmpty prepend="AND" property="rentDt">
+		    A.RENT_DT LIKE CONCAT('%' , #rentDt# , '%')
+		   </isNotEmpty>
+		   <isNotEmpty prepend="AND" property="applyDate">
+		    A.APPLY_DATE LIKE CONCAT('%' , #applyDate# , '%')
+		   </isNotEmpty>
+		   <isNotEmpty prepend="AND" property="reservationNumber">
+		    A.RESERVATION_NUMBER LIKE CONCAT('%', #reservationNumber#, '%')
+		   </isNotEmpty>
+        ORDER BY A.REG_DATE DESC
+	</select>
+	
+	<update id="ResvAppyDAO.updateUser">
+		/* ResvAppyDAO.updateUser */
+		UPDATE TB_CL_HT_CARRESERVATION
+		   SET RESERVATION_STATUS = #reservationStatus# 
+		 WHERE 1=1
+		   AND RESERVATION_NUMBER 	= #reservationNumber#
+	</update>
+		
+</sqlMap>

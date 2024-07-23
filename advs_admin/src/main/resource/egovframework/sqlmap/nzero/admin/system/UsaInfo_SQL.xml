@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UsaInfo">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+
+	<select id="UsaInfoDAO.selectUsaInfoList" parameterClass="paramMap" resultClass="egovMap">
+		/* UsaInfoDAO.selectUsaInfoList */
+		SELECT 
+			CONTENT, 
+			TEL_NO, 
+			FAX_NO, 
+			EMAIL 
+		FROM 
+			TB_CONTECT
+	</select>
+	
+	<update id="UsaInfoDAO.updateUsaInfo">
+		/* UsaInfoDAO.updateUsaInfo */
+		UPDATE TB_CONTECT
+		   SET CONTENT = #content# 
+		   , TEL_NO = #telNo# 
+		   , FAX_NO = #faxNo# 
+		   , EMAIL = #email# 
+	</update>
+		
+</sqlMap>

@@ -1,0 +1,150 @@
+@charset "UTF-8";
+@import 'lib/simplebar.css';
+/** plugin */
+.ui-scroller {
+  font-size: 0px;
+}
+.ui-scroller::-webkit-scrollbar {
+  display: none;
+}
+.ui-scroller .simplebar-track {
+  border-radius: 10px;
+}
+.ui-scroller .simplebar-track .simplebar-scrollbar::before {
+  top: 0;
+  left: 0;
+  display: block;
+  width: 4px;
+  height: 100%;
+  opacity: 1;
+  background-color: #9da8bb;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.ui-scroller .simplebar-track {
+  top: 50px;
+  right: 5px;
+  width: 4px;
+  height: calc(100% - 60px);
+  background-color: #dfe3e8;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.ui-scroller .simplebar-track .simplebar-vertical .simplebar-scrollbar:before {
+  top: 0;
+}
+.ui-scroller .simplebar-track.simplebar-horizontal {
+  top: 98.5%;
+  width: 97%;
+  height: 4px;
+  right: auto;
+  left: 10px;
+}
+.ui-scroller .simplebar-track.simplebar-horizontal .simplebar-scrollbar {
+  top: 0;
+  right: auto;
+  width: auto;
+  height: 100%;
+}
+.ui-scroller .simplebar-track.simplebar-horizontal .simplebar-scrollbar::before {
+  height: 100%;
+  width: auto;
+}
+
+/* mod::20230130::jquery-ui */
+.ui-datepicker {
+	display:none;
+  width: 300px;
+  height: auto;
+  margin: 5px auto 0;
+  padding:10px;
+  font: 9pt Arial, sans-serif;
+  -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, .5);
+  -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, .5);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, .5);
+  background-color:#fff;
+}
+.ui-datepicker *{
+	background-color:#fff;
+	text-align:center;
+}
+
+.ui-datepicker a {
+	display:block;
+	padding:5px 0;
+  text-decoration: none;
+}
+.ui-datepicker a:hover{
+	background-color:#172e5738;
+}
+
+.ui-datepicker table {
+  width: 100%;
+  margin-top:10px;
+border:1px solid #e8eef1;
+}
+
+.ui-datepicker-title, .ui-datepicker-year, .ui-datepicker-month {
+	font-size:0.875rem;
+  text-align: center;
+}
+.ui-datepicker-year, .ui-datepicker-month{
+	width:60px;
+	height:35px;
+	margin:0 5px;
+	line-height:35px;
+	text-indent:0;
+}
+
+.ui-datepicker-prev {
+  float: left;
+  margin-top:10px;
+  background-position: center -30px;
+  cursor:pointer;
+}
+.ui-datepicker-next {
+  float: right;
+  margin-top:10px;
+  background-position: center 0px;
+  cursor:pointer;
+}
+
+.ui-datepicker thead {
+  background-color: #f7f7f7;
+  background-image: -moz-linear-gradient(top,  #f7f7f7 0%, #f1f1f1 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f7f7f7), color-stop(100%,#f1f1f1));
+  background-image: -webkit-linear-gradient(top,  #f7f7f7 0%,#f1f1f1 100%);
+  background-image: -o-linear-gradient(top,  #f7f7f7 0%,#f1f1f1 100%);
+  background-image: -ms-linear-gradient(top,  #f7f7f7 0%,#f1f1f1 100%);
+  background-image: linear-gradient(top,  #f7f7f7 0%,#f1f1f1 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#f1f1f1',GradientType=0 );
+  border-bottom: 1px solid #bbb;
+}
+
+.ui-datepicker tr th:first-child, .ui-datepicker tr td:first-child a{
+	color:red;
+}
+.ui-datepicker tr th:last-child, .ui-datepicker tr td:last-child a{
+	color:blue;
+}
+.ui-datepicker th {
+  text-transform: uppercase;
+  font-size: 10pt;
+  padding: 5px 0;
+  color: #666666;
+  text-shadow: 1px 0px 0px #fff;
+  filter: dropshadow(color=#fff, offx=1, offy=0);
+}
+
+/* mod::20230130::jq-grid */
+.ui-jqgrid-resize{display:none;}
+.ui-th-column{padding:11px 0;background-color:#f7f8fa;border:1px solid #ebeef2;font-size:0.875rem;font-weight:400;color:#000;vertical-align:middle;}
+.ui-state-default.ui-th-ltr{padding:11px 0;background-color:#f7f8fa;border:1px solid #ebeef2;font-size:0.875rem;font-weight:400;color:#000;vertical-align:middle;}
+td[role="gridcell"]{padding:11px 5px;/* background-color:#fff; */border:1px solid #ebeef2;font-size:0.875rem;font-weight:400;color:#000;vertical-align:middle;}
+/*.ui-jqgrid-bdiv{overflow:auto;}
+.ov-auto--all{overflow:auto;}
+.ov-auto--all .ui-jqgrid-bdiv{overflow:initial}*/
+.yearpicker-container{display:none;}
+@media screen and (max-width:1600px){
+	
+}

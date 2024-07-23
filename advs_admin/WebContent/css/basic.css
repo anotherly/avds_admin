@@ -1,0 +1,282 @@
+@charset "utf-8";
+@font-face {font-family:"nanumbarun"; src:url(/css/font/NanumBarunGothic.eot);}
+@font-face {font-family:"nanumbarunttf"; src:url(/css/font/NanumBarunGothic.ttf);}
+@font-face {font-family:"nanumbarunB"; src:url(/css/font/NanumBarunGothicBold.eot);}
+@font-face {font-family:"nanumbarunBttf"; src:url(/css/font/NanumBarunGothicBold.ttf);}
+
+/*@import url('http://fonts.googleapis.com/earlyaccess/nanumgothic.css'); 
+google 'Nanum Gothic'*/
+
+
+
+/* 태그별 기본 설정 */
+html{height:100%;} /*세로 100%일때 html,body,감싼wrap height100% 줘야함*/
+body {
+	height:100%;
+	margin:0;
+	padding:0;
+	font-family:"nanumbarunttf","nanumbarun","dotum", "돋움";
+	/*font-family:"dotum", "돋움";*/
+	/*font-family:'맑은 고딕', 'Malgun Gothic', dotum,"돋움",sans-serif; color:#444;*/
+	color:#777777;
+	font-size:12px;
+	line-height: 1.4em;}
+
+
+div, p, span, td, li, dd, dt, input, select, textarea {
+	/* 텍스트들의 css 정의 */
+	color:#777777;
+}
+
+th{color:#444}
+
+table {font-size:12px; line-height:1.4em;}
+
+form {
+	margin:0;
+	padding:0;
+}
+
+ul {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+}
+
+li,dl,dt,dd {
+	margin:0;
+	padding:0;
+	line-height:1.4em;
+}
+
+hr {
+	display:none;
+}
+caption{display:none;}
+table,th,td {
+	border-collapse:collapse;
+	padding:0;
+	margin:0;
+}
+
+
+img, type-image, fieldset {
+	border: 0 none;
+	margin:0; 
+	padding:0;
+}
+
+legend{display:none;}
+
+a:link, a:visited {
+	color: #777777;
+	text-decoration: none;
+}
+a:active, a:hover, a:focus {
+	color: #777777;
+	text-decoration: none;
+}
+
+/*input[type=text], input[type=password]{
+	border:1px solid #c1c1c1;
+	border-bottom:1px solid #e4e4e4; border-right:1px solid #e4e4e4;
+	background:#fff;
+	padding:0px;
+	height:18px; line-height:18px; padding:0 3px; vertical-align:middle;
+	font-family:"dotum", "돋움";	
+}
+
+input:disabled, select:disabled, textarea:disabled, input[type=text]:disabled{
+	background:#eee;
+	border:1px solid #c1c1c1;
+	border-bottom:1px solid #e4e4e4; border-right:1px solid #e4e4e4;
+	}
+// 오버,포커스일때 변화주려면
+input:hover, input:focus, select:hover, select:focus, textarea:hover, textarea:focus, input[type=text]:hover, input[type=text]:focus{
+	border:1px solid #6b9ee2;
+	border-bottom:1px solid #98b9e6; border-right:1px solid #98b9e6;
+	}
+
+input, select, textarea {
+	vertical-align: middle;
+	color: #777777;
+	margin:0; padding:0;
+}
+
+textarea {
+	border:1px solid #c1c1c1;
+	border-bottom:1px solid #e4e4e4; border-right:1px solid #e4e4e4;
+	background:#fff;
+	padding:5px;
+	font-family:"dotum", "돋움";
+}
+
+input[type=radio],input[type=checkbox]{margin:0 3px 0 7px;}
+
+select{border:1px solid #c1c1c1;
+	height:20px; padding:0 3px;	
+	padding-right:0;
+	}
+*/
+
+button, label{cursor:pointer}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+p {
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    border: medium none;
+    vertical-align: middle;
+}
+
+address{font-style:normal;}
+
+/* float */
+.float_left  { float:left; }
+.float_right { float:right; }
+.float_clear { clear:both; margin:0;padding:0;border:none;}
+
+
+
+/* position */
+.justify	 { text-align:justify; }
+.center		 { text-align:center; }
+.left		 { text-align:left; }
+.right		 { text-align:right; }
+.top		 { vertical-align:top; }
+.middle		 { vertical-align:middle; }
+.bottom		 { vertical-align:bottom; }
+
+
+	
+/* 폰트 Class 정의 */
+
+
+/* width */
+.w25p{width:25%;}
+.w30p{width:30%;}
+.w33p{width:33.3%;}
+.w35p{width:35%;}
+.w40p{width:40%;}
+.w50p{width:50%;}
+.w60p{width:60%;}
+.w70p{width:70%;}
+.w80p{width:80%;}
+.w95p{width:95%;}
+.w98p{width:98%;}
+.w100p{width:100%;}
+.w50px{width:50px;}
+.w70px{width:70px;}
+.w80px{width:80px;}
+.w90px{width:90px;}
+.w100px{width:100px;}
+.w110px{width:110px;}
+.w120px{width:120px;}
+.w130px{width:130px;}
+.w140px{width:140px;}
+.w150px{width:150px;}
+.w200px{width:200px;}
+
+/* Height */
+.h50p{height:50%}
+.h90p{height:90%}
+.h100p{height:100%}
+
+.h50px{height:50px}
+.h60px{height:60px}
+.h70px{height:70px}
+.h80px{height:80px}
+.h90px{height:90px}
+.h100px{height:100px}
+.h500px{height:500px}
+
+/*Margin*/
+.mb0 { margin-bottom: 0px; }
+.mb5 { margin-bottom: 5px; }
+.mb10 { margin-bottom: 10px; }
+.mb15 { margin-bottom: 15px; }
+.mb20 { margin-bottom: 20px; }
+.mb25 { margin-bottom: 25px; }
+.mb30 { margin-bottom: 30px; }
+.mb40 { margin-bottom: 40px; }
+.mb50 { margin-bottom: 50px; }
+
+.mt0 { margin-top: 0px; }
+.mt5 { margin-top: 5px; }
+.mt10 { margin-top: 10px; }
+.mt15 { margin-top: 15px; }
+.mt20 { margin-top: 20px; }
+.mt25 { margin-top: 25px; }
+.mt30 { margin-top: 30px; }
+.mt40 { margin-top: 40px; }
+.mt50 { margin-top: 50px; }
+
+.ml0 { margin-left: 0px; }
+.ml5 { margin-left: 5px; }
+.ml10 { margin-left: 10px; }
+.ml15 { margin-left: 15px; }
+.ml20 { margin-left: 20px; }
+.ml25 { margin-left: 25px; }
+.ml30 { margin-left: 30px; }
+
+.mr0 { margin-right: 0px; }
+.mr5 { margin-right: 5px; }
+.mr10 { margin-right: 10px; }
+.mr15 { margin-right: 15px; }
+.mr20 { margin-right: 20px; }
+.mr23 { margin-right: 23px; }
+.mr25 { margin-right: 25px; }
+.mr30 { margin-right: 30px; }
+.mr40 { margin-right: 40px; }
+
+/*Padding*/
+.pb05 { padding-bottom: 5px; }
+.pb10 { padding-bottom: 10px; }
+.pb15 { padding-bottom: 15px; }
+.pb20 { padding-bottom: 20px; }
+.pb25 { padding-bottom: 25px; }
+.pb30 { padding-bottom: 30px; }
+.pb40 { padding-bottom: 40px; }
+.pb50 { padding-bottom: 50px; }
+
+.pt10 { padding-top: 10px; }
+.pt15 { padding-top: 15px; }
+.pt20 { padding-top: 20px; }
+.pt25 { padding-top: 25px; }
+.pt30 { padding-top: 30px; }
+.pt40 { padding-top: 40px; }
+.pt50 { padding-top: 50px; }
+
+.pl10 { padding-left: 10px; }
+.pl15 { padding-left: 15px; }
+.pl17 { padding-left: 17px; }
+.pl20 { padding-left: 20px; }
+.pl25 { padding-left: 25px; }
+.pl30 { padding-left: 30px; }
+.pl50 { padding-left: 50px; }
+
+.pr3 { padding-right: 3px; }
+.pr10 { padding-right: 10px; }
+.pr15 { padding-right: 15px; }
+.pr16 { padding-right: 16px; }
+.pr17 { padding-right: 17px; }
+.pr20 { padding-right: 20px; }
+.pr25 { padding-right: 25px; }
+.pr30 { padding-right: 30px; }
+
+	
+
+/* visible, display */
+.visible_visible  {visibility:visible;}
+.visible_hidden   {visibility:hidden; width:0; height:0; line-height:0; overflow:hidden; font-size:0; border:0;}
+.display_none     {display:none;}
+.display_block    {display:block;}
+.display_inline   {display:inline;}
+
+.test{border:1px solid red;}

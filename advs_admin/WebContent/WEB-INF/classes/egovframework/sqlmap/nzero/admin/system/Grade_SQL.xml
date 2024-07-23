@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Grade">
+	
+	<typeAlias alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="GradeDAO.selectGradeList" parameterClass="paramMap" resultClass="egovMap">
+		/* GradeDAO.selectGradeList */
+    SELECT A.*
+          ,fn_ct_get_code_name('auth_cd', A.AUTH_CD) AS AUTH_CD_VIEW
+          ,A.AGENCY_CD AS AGENCY_CD_VIEW
+          ,fn_ct_get_code_name('appor_status', A.APPOR_STATUS) AS APPOR_STATUS_VIEW
+          ,fn_ct_get_code_name('class_id', A.CLASS_ID) AS CLASS_ID_VIEW
+          ,TO_CHAR(A.REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE_VIEW
+          ,TO_CHAR(A.CONN_ALLOWED_START_TIME, 'YYYY-MM-DD HH24:MI') AS START_TIME_VIEW
+          ,TO_CHAR(A.CONN_ALLOWED_END_TIME, 'YYYY-MM-DD HH24:MI') AS END_TIME_VIEW
+          ,B.EVAL_POINT
+          ,B.CNT
+      FROM TB_WEB_IT_USER A
+          ,(SELECT R.REG_ID 
+                  ,TO_CHAR(ROUND(AVG(NVL(W.EVAL_POINT,0)),1),'9999.9') AS EVAL_POINT 
+                  ,COUNT(R.REG_ID) CNT
+              FROM TB_WEB_HT_DOWNLOAD W, TB_WEB_HT_BOARD R
+             WHERE 1=1
+               AND W.B_SEQ = R.B_SEQ
+             GROUP BY R.REG_ID) B 
+     WHERE 1=1
+       AND A.USER_ID = B.REG_ID(+)
+       AND A.APPOR_STATUS = '101'
+		<isNotEmpty prepend="AND" property="sUserId">
+			A.USER_ID = #sUserId#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sUserNm">
+			A.USER_NM LIKE '%'||#sUserNm#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sUseYn">
+			A.USE_YN = #sUseYn#
+		</isNotEmpty>
+     ORDER BY A.USER_NM
+	</select>
+	
+	<update id="GradeDAO.updateGrade">
+		/* GradeDAO.updateGrade */
+		UPDATE TB_WEB_IT_USER
+		   SET CLASS_ID	= #classId#
+		      ,USE_YN		= #useYn#
+		 WHERE 1 = 1
+			 AND USER_ID = #userId#
+	</update>
+
+</sqlMap>

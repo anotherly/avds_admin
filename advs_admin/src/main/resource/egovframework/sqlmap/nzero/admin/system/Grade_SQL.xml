@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Grade">
+	
+	<typeAlias alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="GradeDAO.selectGradeList" parameterClass="paramMap" resultClass="egovMap">
+		/* GradeDAO.selectGradeList */
+    SELECT A.*
+          ,fn_ct_get_code_name('auth_cd', A.AUTH_CD) AS AUTH_CD_VIEW
+          ,A.AGENCY_CD AS AGENCY_CD_VIEW
+          ,fn_ct_get_code_name('appor_status', A.APPOR_STATUS) AS APPOR_STATUS_VIEW
+          ,fn_ct_get_code_name('class_id', A.CLASS_ID) AS CLASS_ID_VIEW
+          ,DATE_FORMAT(A.REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE_VIEW
+          ,DATE_FORMAT(A.CONN_ALLOWED_START_TIME, '%Y-%m-%d %H:%i') AS START_TIME_VIEW
+          ,DATE_FORMAT(A.CONN_ALLOWED_END_TIME, '%Y-%m-%d %H:%i') AS END_TIME_VIEW
+          ,A.AUTOCAR_LEVEL
+          ,fn_ct_get_code_name('autocar_level', A.AUTOCAR_LEVEL) AS AUTOCAR_LEVEL_VIEW
+      FROM TB_WEB_IT_USER A
+     WHERE 1=1
+       AND (A.AUTH_CD = '102' OR A.AUTH_CD ='105')
+       AND A.APPOR_STATUS = '102'
+		<isNotEmpty prepend="AND" property="sUserId">
+			A.USER_ID = #sUserId#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sUserNm">
+			A.USER_NM LIKE CONCAT('%', #sUserNm#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sUseYn">
+			A.USE_YN = #sUseYn#
+		</isNotEmpty>
+     ORDER BY A.USER_NM
+	</select>
+	
+	<update id="GradeDAO.updateGrade">
+		/* GradeDAO.updateGrade */
+		UPDATE TB_WEB_IT_USER
+		   SET AUTOCAR_LEVEL = #autocarLevel#
+		      ,USE_YN		= #useYn#
+		 WHERE 1 = 1
+			 AND USER_ID = #userId#
+	</update>
+
+</sqlMap>

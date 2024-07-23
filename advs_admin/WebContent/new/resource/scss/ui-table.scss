@@ -1,0 +1,111 @@
+@charset 'utf-8';
+@import 'mixin';
+@import '../../node_modules/@euid/scss-mixins';
+@import '../../node_modules/flexbox-grid-mixins/sass/flexbox-grid-mixins';
+
+.el{
+    &-table{
+        border-spacing:0;
+        width:100%;
+        border:1px solid #ebeef2;
+        border-collapse: collapse;
+        th{
+            padding:11px 9px;
+            background-color:#f7f8fa;
+            border:1px solid #ebeef2;
+            @include font(size rem(14) weight 400);
+            color:#000;
+            vertical-align:middle;
+            text-align: center;
+        }
+        td{
+            padding:11px 9px;
+            border:1px solid #ebeef2;
+            background-color:#fff;
+            @include font(size rem(14) weight 400);
+            color:#000;
+            border-top:none;
+            vertical-align:middle;
+            text-align: left;
+            &.form-wrap--table{
+                padding:3px 9px; 
+            }
+        }
+        &-wrap{
+            width:100%;
+        }
+        &-noData{
+            height:100%;
+            td[colspan]{
+                width:100%;
+                height:100%;
+                vertical-align: middle;
+            }
+        }
+        &.lay{
+            &-item{
+                &--1100{
+                    @include w17s{
+                        width:100%;
+                    }
+                }
+                &--1200{
+                    @include w18s{
+                        width:100%;
+                    }
+                }
+                &--1300{
+                    @include w19s{
+                        width:100%;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.ui{
+    &-table{
+        &-fixHead{
+            border:1px solid #ebeef2;
+            table{
+                border:none;
+            }
+            thead{
+                th{
+                    position:sticky;
+                    top:0;
+                    border-top:none;
+                    &:first-child{
+                        border-left:none;
+                    }
+                    &:last-child{
+                        border-right:none;
+                    }
+                    &::after{
+                        @include absolute(b -1 l 0);
+                        width:100%;
+                        height:1px;
+                        background-color:#ebeef2;
+                        content:""
+                    }
+                }
+            }
+            td{
+                &:first-child{
+                    border-left:none;
+                }
+                &:last-child{
+                    border-right:none;
+                }
+            }
+            tr{
+                &:last-child{
+                    td{
+                        border-bottom:none;
+                    }
+                }
+            }
+        }
+    }
+}

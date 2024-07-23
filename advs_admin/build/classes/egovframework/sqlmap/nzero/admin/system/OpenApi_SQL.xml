@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OpenApiMap">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="OpenApiDAO.selectOpenApiList" parameterClass="paramMap" resultClass="egovMap">
+		/* OpenApiDAO.selectOpenApiList */
+		SELECT A.*
+		      ,fn_ct_get_code_name('openapi_appr_cd', A.api_appr_code ) AS api_appr_nm
+   		      ,DATE_FORMAT(A.API_APPR_DATE, '%Y-%m-%d %H:%i') AS API_APPR_DATE_VIEW
+   		      ,DATE_FORMAT(A.API_APPR_CANCELDATE, '%Y-%m-%d %H:%i') AS API_APPR_CANCELDATE_VIEW   		      		      
+   		      ,DATE_FORMAT(A.UPDATE_DATE, '%Y-%m-%d %H:%i') AS UPDATE_DATE_VIEW
+		      ,DATE_FORMAT(A.REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE_VIEW
+	      FROM TB_WEB_HT_OPENAPI A
+	     WHERE 1=1
+	     <isNotEmpty property="sUserId">
+	     AND USER_ID = #sUserId#
+	     </isNotEmpty>
+	     <isNotEmpty property="sApiApprCode">
+	     AND API_APPR_CODE = #sApiApprCode#
+	     </isNotEmpty>
+	     <isNotEmpty property="sApplyApiCompany">
+	     AND APPLY_API_COMPANY LIKE '%$sApplyApiCompany$%'
+	     </isNotEmpty>
+         ORDER BY USER_ID, APPLY_API_COMPANY
+	</select>
+	
+	<delete id="OpenApiDAO.deleteOpenApi">
+		/* OpenApiDAO.deleteOpenApi */
+		DELETE FROM TB_WEB_HT_OPENAPI
+		 WHERE USER_ID = #userId#
+	</delete>
+	
+	<update id="OpenApiDAO.updateOpenApi">
+		/* OpenApiDAO.updateOpenApi */
+		UPDATE TB_WEB_HT_OPENAPI
+		SET UPDATE_ID = #updateId#
+		   ,UPDATE_DATE = SYSDATE()
+	     <isNotEmpty property="applyApiUrl">
+	       ,APPLY_API_URL = #applyApiUrl#
+	     </isNotEmpty>
+	     <isNotEmpty property="applyApiCompany">
+	       ,APPLY_API_COMPANY = #applyApiCompany#
+	     </isNotEmpty>
+	     <isNotEmpty property="purpose">
+	       ,PURPOSE = #purpose#
+	     </isNotEmpty>
+	     <isNotEmpty property="apiApprCode">
+	       ,API_APPR_CODE = #apiApprCode#
+	     	<isEqual property="apiApprCode" compareValue="02">
+	     		,API_APPR_DATE = SYSDATE()
+	     	</isEqual>
+	     	<isEqual property="apiApprCode" compareValue="03">
+	     		,API_APPR_CANCELDATE = SYSDATE()
+	     	</isEqual>	     	
+	     </isNotEmpty>	     
+	     <isNotEmpty property="apiApprDate">
+	       ,API_APPR_DATE = #apiApprDate#
+	     </isNotEmpty>	
+	     <isNotEmpty property="apiApprCanceldate">
+	       ,API_APPR_CANCELDATE = #apiApprCanceldate#
+	     </isNotEmpty>
+	     <isNotEmpty property="apiKey">
+	       ,API_KEY = #apiKey#
+	     </isNotEmpty>	     	     	     	     	     
+		WHERE USER_ID = #userId#
+	</update>
+	
+</sqlMap>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SvrResource">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="userVo" type="nzero.admin.egovframework.cmmn.service.impl.UserVo"/>
+	
+	<select id="SvrResourceDAO.selectSvrResourceList" parameterClass="paramMap" resultClass="egovMap">
+		/* SvrResourceDAO.selectSvrResourceList */
+		SELECT LOG_ID,
+		       DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE,
+		       SERVER_ID,
+		       SERVER_NM,
+		       SERVER_IP
+		       <!-- FN_CT_GET_CODE_NAME('YN_CODE2', CPU_USAGE) AS CPU_USAGE,
+		       FN_CT_GET_CODE_NAME('YN_CODE2', MEM_USAGE) AS MEM_USAGE,
+		       FN_CT_GET_CODE_NAME('system_type_cd', SYSTEM_TYPE_CD) AS SYSTEM_TYPE_CD -->
+		  FROM TB_CM_HT_SERVERRESOURCE
+		 WHERE 1=1
+		   AND REG_DATE BETWEEN CONCAT(DATE_FORMAT(#stdate#,'%Y-%m-%d'), ' 00:00:00.000') AND CONCAT(DATE_FORMAT(#eddate#,'%Y-%m-%d'), ' 23:59:59.999')
+		<isNotEmpty property="sKeyword">
+		   AND SERVER_NM LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		 ORDER BY REG_DATE DESC
+	</select>
+	
+	<insert id="SvrResourceDAO.insertResourceHist" parameterClass="userVo">
+		/* QUERY ID : SvrResourceDAO.selectSvrResourceList */
+		INSERT INTO TB_CM_HT_SERVERRESOURCE(
+			LOG_ID,			
+			REG_DATE,
+			SERVER_ID,
+			SERVER_NM,
+			SERVER_IP
+		) VALUES (
+			#authId#,		
+			NOW(3),
+			#userId#,
+			#userNm#,
+			#userIp#
+		);
+	</insert>
+		
+</sqlMap>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SvrResource">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="SvrResourceDAO.selectSvrResourceList" parameterClass="paramMap" resultClass="egovMap">
+		/* SvrResourceDAO.selectSvrResourceList */
+		SELECT LOG_ID,
+		       TO_CHAR(REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE,
+		       SERVER_ID,
+		       SERVER_NM,
+		       SERVER_IP,
+		       FN_CT_GET_CODE_NAME('YN_CODE2', CPU_USAGE) AS CPU_USAGE,
+		       FN_CT_GET_CODE_NAME('YN_CODE2', MEM_USAGE) AS MEM_USAGE,
+		       FN_CT_GET_CODE_NAME('system_type_cd', SYSTEM_TYPE_CD) AS SYSTEM_TYPE_CD
+		  FROM TB_CM_HT_SERVERRESOURCE
+		 WHERE 1=1
+		   AND REG_DATE BETWEEN TO_DATE(#stdate#,'YYYY-MM-DD') AND TO_DATE(#eddate#,'YYYY-MM-DD')
+		<isNotEmpty property="sKeyword">
+		   AND SERVER_NM LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>
+		 ORDER BY REG_DATE DESC
+	</select>
+		
+</sqlMap>

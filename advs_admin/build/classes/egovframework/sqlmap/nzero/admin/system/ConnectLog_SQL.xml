@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ConnectLog">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="ConnectLogDAO.selectConnectLogList" parameterClass="paramMap" resultClass="egovMap">
+		/* ConnectLogDAO.selectConnectLogList */
+		SELECT A.*
+		      ,B.USER_NM
+		      ,B.AGENCY_CD
+		      ,B.AGENCY_CD AS AGENCY_CD_VIEW
+		      ,fn_ct_get_code_name('conect_mthd', A.CONECT_MTHD) AS CONECT_MTHD_VIEW
+		      ,DATE_FORMAT(A.CREAT_DT, '%Y-%m-%d %H:%i') AS CREAT_DT_VIEW
+		  FROM TB_WEB_IT_USERCONNECT A
+		      ,TB_WEB_IT_USER B
+		 WHERE 1=1
+		   AND A.USER_ID = B.USER_ID
+			<isNotEmpty prepend="AND" property="sUserId">
+				A.USER_ID LIKE CONCAT('%', #sUserId#, '%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="sUserNm">
+				B.USER_NM LIKE CONCAT('%', #sUserNm#, '%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="stdate">
+				A.CREAT_DT BETWEEN DATE_FORMAT(CONCAT(#stdate#, ' 00:00:00'), '%Y-%m-%d %H:%i:%s') AND DATE_FORMAT(CONCAT(#eddate#, ' 23:59:59'), '%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+		 ORDER BY A.CREAT_DT DESC
+	</select>
+		
+</sqlMap>

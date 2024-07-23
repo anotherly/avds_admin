@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="WebAuth">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="WebAuthDAO.selectAuthComboBox" parameterClass="paramMap" resultClass="egovMap">
+		/* WebAuthDAO.selectAuthComboBox */
+		SELECT AUTH_ID
+		     , AUTH_NM
+		     , AUTHOR_DC
+		     , DISP_ORDR
+		     , USE_YN
+	      FROM TB_WEB_MENU_AUTHORITY
+	     WHERE 1 = 1
+	    <isNotEmpty prepend="AND" property="sAuthId">
+			AUTH_ID = #sAuthId#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sUseYn">
+			USE_YN = #sUseYn#
+		</isNotEmpty>
+         ORDER BY DISP_ORDR
+	</select>
+	
+	<select id="WebAuthDAO.selectAuthList" parameterClass="paramMap" resultClass="egovMap">
+		/* WebAuthDAO.selectAuthList */
+		SELECT AUTH_ID
+		     , AUTH_NM
+		     , AUTHOR_DC
+		     , DISP_ORDR
+		     , USE_YN
+	      FROM TB_WEB_MENU_AUTHORITY
+	     WHERE 1 = 1
+	    <isNotEmpty prepend="AND" property="sAuthId">
+			AUTH_ID LIKE CONCAT('%', #sAuthId#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sAuthNm">
+			AUTH_NM LIKE CONCAT('%', #sAuthNm#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sUseYn">
+			USE_YN = #sUseYn#
+		</isNotEmpty>
+         ORDER BY DISP_ORDR
+	</select>
+	
+	<select id="WebAuthDAO.selectMaxAuthId" parameterClass="paramMap" resultClass="int">
+		/* WebAuthDAO.selectMaxAuthId */
+		SELECT MAX(AUTH_ID) FROM TB_WEB_MENU_AUTHORITY
+	</select>
+	
+	<insert id="WebAuthDAO.insertAuth">
+		/* WebAuthDAO.insertAuth */
+		INSERT INTO TB_WEB_MENU_AUTHORITY
+		( AUTH_ID, AUTH_NM, AUTHOR_DC, DISP_ORDR, USE_YN )
+		VALUES
+		( #authId#, #authNm#, #authorDc#, #dispOrdr#, #useYn# )
+	</insert>
+	
+	<update id="WebAuthDAO.updateAuth">
+		/* WebAuthDAO.updateAuth */
+		UPDATE TB_WEB_MENU_AUTHORITY
+		   SET AUTH_NM   = #authNm#
+		     , AUTHOR_DC = #authorDc#
+		     , DISP_ORDR = #dispOrdr#
+		     , USE_YN    = #useYn#
+		 WHERE AUTH_ID = #authId#
+	</update>
+	
+	<delete id="WebAuthDAO.deleteAuth">
+		/* WebAuthDAO.deleteAuth */
+		DELETE FROM TB_WEB_MENU_AUTHORITY
+		 WHERE AUTH_ID = #authId#
+	</delete>
+	
+</sqlMap>

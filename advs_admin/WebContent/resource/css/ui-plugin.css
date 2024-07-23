@@ -1,0 +1,51 @@
+@import 'lib/simplebar.css';
+/** plugin */
+.ui-scroller {
+  font-size: 0px;
+}
+.ui-scroller::-webkit-scrollbar {
+  display: none;
+}
+.ui-scroller .simplebar-track {
+  border-radius: 10px;
+}
+.ui-scroller .simplebar-track .simplebar-scrollbar::before {
+  top: 0;
+  left: 0;
+  display: block;
+  width: 4px;
+  height: 100%;
+  opacity: 1;
+  background-color: #9da8bb;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.ui-scroller .simplebar-track {
+  top: 50px;
+  right: 5px;
+  width: 4px;
+  height: calc(100% - 60px);
+  background-color: #dfe3e8;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.ui-scroller .simplebar-track .simplebar-vertical .simplebar-scrollbar:before {
+  top: 0;
+}
+.ui-scroller .simplebar-track.simplebar-horizontal {
+  top: 98.5%;
+  width: 97%;
+  height: 4px;
+  right: auto;
+  left: 10px;
+}
+.ui-scroller .simplebar-track.simplebar-horizontal .simplebar-scrollbar {
+  top: 0;
+  right: auto;
+  width: auto;
+  height: 100%;
+}
+.ui-scroller .simplebar-track.simplebar-horizontal .simplebar-scrollbar::before {
+  height: 100%;
+  width: auto;
+}

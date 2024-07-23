@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="IncdHist">
+
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+
+
+	<!-- 사고동영상 목록 조회 -->
+	<select id="IncdVideoDAO.selectVideoList" parameterClass="paramMap" resultClass="egovMap">
+		SELECT A.*
+		      ,ROUND(NVL(A.FILE_SIZE,0)/1024,0) AS FILE_SIZE_VIEW
+		      ,fn_ct_get_code_name('file_type', A.FILE_TYPE ) AS FILE_TYPE_VIEW
+		  FROM TB_CL_HT_ACCIDENTMOVIE A
+		 WHERE 1=1
+		   AND A.TMP_RACE_NUMBER = #sDrvNo#
+		   AND A.ACC_ID = #sAccId#
+		 ORDER BY A.SEQ
+	</select>
+
+
+</sqlMap>

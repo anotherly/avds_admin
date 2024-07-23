@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/main/Login_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/User_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/Code_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/Auth_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/Menu_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/AuthMap_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/Param_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/record/UpldHist_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/record/DownHist_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/record/DrvgHist_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/record/DevcHist_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/record/IncdHist_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/record/IncdVideo_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/record/DataUsed_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/statistics/AcidStat_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/statistics/DistStat_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/statistics/ControlStat_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/Notice_sql.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/NewTrends_sql.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/SvrResource_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/SystemLog_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/main/Main_sql.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/Grade_SQL.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/ReqConfirm_sql.xml"></sqlMap>
+<sqlMap resource="egovframework/sqlmap/nzero/admin/system/ConnectLog_SQL.xml"></sqlMap>
+</sqlMapConfig>

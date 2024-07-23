@@ -1,0 +1,51 @@
+@charset 'utf-8';
+@import 'mixin';
+@import '../../node_modules/@euid/scss-mixins';
+@import '../../node_modules/flexbox-grid-mixins/sass/flexbox-grid-mixins';
+
+.el{
+    &-table{
+        &--approve{
+            th{
+                text-align:center;
+            }
+            td{
+                text-align:left;
+            }
+            &List{
+                td{
+                    text-align:center;
+                }
+            }
+        }
+    }
+    &-approve{
+        &-comp{
+            @include font(weight 500);
+            color:#003ba2;
+        }
+        &-ask{
+            @include font(weight 500);
+            color:#de7b00;
+        }
+    }
+}
+
+// hover
+@include media-breakpoint-up(n-xl){
+    .el{
+        &-table{
+            &--approve{
+                &List{
+                    tr{
+                        &:hover{
+                            > td{
+                                background-color:#f7f4ee;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Login">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias  alias="userVo" type="nzero.admin.egovframework.cmmn.service.impl.UserVo"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="LoginDAO.selectUserVo" parameterClass="paramMap" resultClass="userVo">
+		/* LoginDAO.selectUserVo */
+		SELECT USER_ID AS userId
+		     , USER_NM AS userNm
+		     , USER_PWD AS userPwd
+		     , AUTH_ID AS authId
+		  FROM TB_CM_IT_USER
+		 WHERE USER_ID = #userId#
+		   AND USE_YN = 'Y'
+	</select>
+	
+	<select id="LoginDAO.selectMainMenuList" parameterClass="paramMap" resultClass="egovMap">
+		/* LoginDAO.selectMainMenuList */
+		SELECT MENU_ID as id
+		     , MENU_NM
+		     , MENU_PRNT_ID
+		     , DISP_ORDR
+		     , MENU_PATH
+		     , MENU_OBJECT
+		     , MENU_DESC
+		     , ICON_NM
+		     , LEAF_YN
+		     , MENU_LEVEL
+		     , USE_YN
+	    FROM TB_CM_MT_MENU
+	   WHERE MENU_ID IN (SELECT MENU_ID FROM TB_CM_MENU_MAP WHERE AUTH_ID = #authId#)
+	     AND USE_YN = 'Y'
+	     AND MENU_LEVEL != 0
+		<isNotEmpty prepend="AND" property="menuPrntId">
+			MENU_PRNT_ID LIKE SUBSTR(#menuPrntId#, 1, 1) || '%'
+		</isNotEmpty>
+       ORDER BY DISP_ORDR
+	</select>
+	
+	<select id="LoginDAO.selectMenu" parameterClass="paramMap" resultClass="egovMap">
+		/* LoginDAO.selectMenu */
+		SELECT MENU_ID
+		     , MENU_NM
+		     , MENU_PRNT_ID
+             , DISP_ORDR
+             , MENU_PATH
+             , MENU_OBJECT
+		     , MENU_DESC
+		     , ICON_NM
+		     , LEAF_YN
+		     , MENU_LEVEL
+		     , USE_YN
+		  FROM TB_CM_MT_MENU
+		 WHERE MENU_ID = #menuId#
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ReqConfirm">
+
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+
+	<!-- 목록 조회 -->
+	<select id="ReqConfirmDAO.selectReqConfirmList" parameterClass="paramMap" resultClass="egovMap">
+		WITH REQ_LIST AS (
+		SELECT 'T' AS REQ_TP, '임시운행번호등록요청' AS REQ_TP_NM,
+		       TMP_RACE_NUMBER AS REQ_ID, USER_ID, 
+           (SELECT USER_NM FROM TB_WEB_IT_USER WHERE USER_ID = TB_CM_HT_TEMPOPER.USER_ID) AS USER_NM,
+           (SELECT AGENCY_CD FROM TB_WEB_IT_USER WHERE USER_ID = TB_CM_HT_TEMPOPER.USER_ID) AS AGENCY_CD,
+		       DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE,
+		       APPOR_STATUS AS STATUS_CD, fn_ct_get_code_name('appor_status', APPOR_STATUS) AS STATUS_NM
+		  FROM TB_CM_HT_TEMPOPER
+		UNION ALL
+		  SELECT 'U' AS REQ_TP, 
+		       '권한승인요청' AS REQ_TP_NM,
+		       USER_ID AS REQ_ID, 
+		       USER_ID, 
+          	   USER_NM,
+           	   AGENCY_CD,
+		       DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE,
+		       APPOR_STATUS AS STATUS_CD,
+				fn_ct_get_code_name('appor_status', APPOR_STATUS) AS STATUS_NM
+		   FROM TB_WEB_IT_USER
+		 UNION ALL
+           SELECT 'A' AS REQ_TP,
+             	  '권한위임요청' AS REQ_TP_NM,
+             	   USER_ID AS REQ_ID,
+             	   USER_ID,               
+                  USER_NM,
+     			  AGENCY_CD,
+      			  DATE_FORMAT(REG_DATE,  '%Y-%m-%d %H:%i') AS REG_DATE,
+     			  APPOR_STATUS AS STATUS_CD,
+     		      fn_ct_get_code_name ('appor_status',    APPOR_STATUS) AS STATUS_NM
+     	  FROM TB_WEB_DT_AUTH    		
+		)
+		SELECT REQ_TP, REQ_TP_NM, REQ_ID, USER_ID, USER_NM, AGENCY_CD, REG_DATE, STATUS_CD, STATUS_NM
+		  FROM REQ_LIST
+		<isNotEmpty prepend="WHERE" property="sReqType">  
+		 	REQ_TP = #sReqType#
+		</isNotEmpty> 
+		 ORDER BY REG_DATE DESC         
+	</select>
+
+	<!-- 상세내용 -->
+	<select id="ReqConfirmDAO.selectReqConfirmInfo_T" parameterClass="paramMap" resultClass="egovMap">
+		SELECT '임시운행번호등록요청' AS REQ_TP_NM, 
+		       TMP_RACE_NUMBER,
+		       TMP_RACE_AGENCY,
+		       INS_LETTER_NUMBER,
+		       DATE_FORMAT(INS_INIT_DATE, '%Y-%m-%d') AS INS_INIT_DATE,
+		       DEED_FILENAME,
+		       USER_ID,
+           (SELECT USER_NM FROM TB_WEB_IT_USER WHERE USER_ID = TB_CM_HT_TEMPOPER.USER_ID) AS USER_NM,
+           (SELECT AGENCY_CD FROM TB_WEB_IT_USER WHERE USER_ID = TB_CM_HT_TEMPOPER.USER_ID) AS AGENCY_CD,
+		       APPOR_STATUS,
+		       CNCL_NOTE,
+		       DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE,
+		       CAR_MODEL,
+		       POWER_SOURCE
+		  FROM TB_CM_HT_TEMPOPER
+		 WHERE TMP_RACE_NUMBER = #reqId#
+	</select>
+
+	<!-- 상세내용 -->
+	<select id="ReqConfirmDAO.selectReqConfirmInfo_U" parameterClass="paramMap" resultClass="egovMap">
+		SELECT '권한승인요청' AS REQ_TP_NM, 
+		       USER_ID,
+           USER_NM,
+           AGENCY_CD,
+           AUTH_CD,
+           fn_ct_get_code_name('auth_cd',AUTH_CD) AS AUTH_NM,
+	       fn_ct_get_code_name('class_id',CLASS_ID) AS CLASS_NM,
+	       APPOR_STATUS,
+	       CNCL_NOTE,
+	       DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE,
+	       AUTOCAR_LEVEL,
+	       fn_ct_get_code_name('autocar_level', AUTOCAR_LEVEL) AS AUTOCAR_LEVEL_VIEW
+		  FROM TB_WEB_IT_USER
+		 WHERE USER_ID = #reqId#           
+	</select>
+	
+	<!-- 상세내용 -->
+	<select id="ReqConfirmDAO.selectReqConfirmInfo_A" parameterClass="paramMap" resultClass="egovMap">	
+		 
+		 SELECT '권한위임요청' AS REQ_TP_NM,
+		        AUTH_ID,
+		        AUTH_CD,
+		        USER_ID,
+		        USER_NM,
+		        AGENCY_CD,
+		        fn_ct_get_code_name ('appor_status',   APPOR_STATUS) AS STATUS_NM,
+		        APPOR_STATUS,  
+		        DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE       
+		 FROM TB_WEB_DT_AUTH
+		 WHERE USER_ID = #reqId#      
+		          
+	</select>
+	
+	<!-- 임시운행등록번호 중복체크 -->
+	<select id="ReqConfirmDAO.checkDuplNumber" parameterClass="paramMap" resultClass="egovMap">
+		SELECT TMP_RACE_NUMBER,
+		       USER_ID
+		  FROM TB_CM_HT_TEMPOPER
+		 WHERE TMP_RACE_NUMBER = #tmpRaceNumber#
+	</select>
+	
+	<!-- 수정 -->
+	<update id="ReqConfirmDAO.updateReqConfirm_T" parameterClass="paramMap">
+	/* QUERY ID : ReqConfirmDAO.updateReqConfirm_T*/
+	<![CDATA[
+          UPDATE TB_CM_HT_TEMPOPER
+             SET APPOR_STATUS  	= #apporStatus#,
+             	 TMP_RACE_NUMBER = #tmpRaceNumber#,
+                 CNCL_NOTE     	= #cnclNote#   
+           WHERE TMP_RACE_NUMBER = #reqId#
+    ]]>
+	</update>
+	
+	<!-- 수정 -->              
+	<update id="ReqConfirmDAO.updateReqConfirm_U" parameterClass="paramMap">
+	/* QUERY ID : ReqConfirmDAO.updateReqConfirm_U*/
+	<![CDATA[
+          UPDATE TB_WEB_IT_USER
+             SET APPOR_STATUS  	= #apporStatus#,
+                 USE_YN = 'Y',
+                 AUTH_CD = #authCd#,
+                 CNCL_NOTE     	= #cnclNote#,
+				 AUTOCAR_LEVEL  = #autocarLevel#                    
+           WHERE USER_ID = #reqId#
+    ]]>
+	</update>
+	
+	<!-- 수정 -->              
+	<update id="ReqConfirmDAO.updateReqConfirm_A" parameterClass="paramMap">
+	/* QUERY ID : ReqConfirmDAO.updateReqConfirm_A*/
+	<![CDATA[
+		  
+		 UPDATE  TB_WEB_DT_AUTH
+		    SET  APPOR_STATUS = #apporStatus#,  
+		         AUTH_ID = #authId#,  
+		         APPOR_YN = 'Y'
+		 WHERE USER_ID = #reqId#    
+    ]]>
+	</update>
+	
+	<!-- 수정 -->              
+	<update id="ReqConfirmDAO.updateAuth_A" parameterClass="paramMap">
+	<![CDATA[
+		  
+		 UPDATE TB_CM_HT_TEMPOPER
+         SET USER_ID = #reqId#
+         where USER_ID = #authId#		 
+		
+    ]]>
+	</update>
+	
+	
+	<!-- 삭제 -->
+	<delete id="ReqConfirmDAO.deleteReqConfirm_T" parameterClass="java.util.HashMap">
+		DELETE 
+		  FROM TB_CM_HT_TEMPOPER
+		 WHERE TMP_RACE_NUMBER = #reqId#
+	</delete>
+	
+	<!-- 삭제 -->
+	<delete id="ReqConfirmDAO.deleteReqConfirm_U" parameterClass="java.util.HashMap">
+		DELETE 
+		  FROM TB_WEB_IT_USER
+		 WHERE USER_ID = #reqId#
+	</delete>
+	
+	<!-- 임시운행정보 보험가입일자 이력 삭제 -->
+	<delete id="ReqConfirmDAO.deleteTempOperInsdateHis" parameterClass="java.util.HashMap">
+		DELETE 
+		  FROM TB_CM_HT_TEMPOPER_INSDATE_HIS
+		 WHERE USER_ID = #tmp_race_number#
+	</delete>
+	
+	<!-- 임시운행정보 보험등록일자 이력 등록 -->
+	<insert id="ReqConfirmDAO.insertTempOperInsdateHis" parameterClass="java.util.HashMap">
+		INSERT 
+		  INTO TB_CM_HT_TEMPOPER_INSDATE_HIS 
+		       (TMP_RACE_NUMBER
+		       ,SEQ
+		       ,INS_INIT_DATE
+		       ,REG_ID
+		       ,REG_DATE)
+		VALUES (#tmpRaceNumber#
+			   ,(SELECT IFNULL(MAX(SEQ), 0) + 1 FROM TB_CM_HT_TEMPOPER_INSDATE_HIS WHERE TMP_RACE_NUMBER = #tmpRaceNumber#)
+		       ,DATE_FORMAT(#insInitDateU#,'%Y-%m-%d %H:%i:%s')
+		       ,#user_id#
+		       ,SYSDATE())
+	</insert>
+	
+	<!-- 임시운행정보 보험등록일자 이력 조회 -->
+	<select id="ReqConfirmDAO.selectTempOperInsdateHisList" parameterClass="java.util.HashMap" resultClass="egovMap">
+		SELECT E.TMP_RACE_NUMBER   AS TMP_NUMBER
+		      ,E.SEQ AS SEQ
+		      ,DATE_FORMAT(E.INS_INIT_DATE, '%Y%m%d%H%i%s') AS INS_INIT_DATE
+		      ,DATE_FORMAT(E.INS_INIT_DATE, '%Y-%m-%d') AS INS_INIT_DATE_VIEW
+		      ,E.REG_ID
+		      ,DATE_FORMAT(E.REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE_VIEW
+		      ,E.UPDATE_ID
+		      ,DATE_FORMAT(E.UPDATE_DATE, '%Y-%m-%d %H:%i') AS UPDATE_DATE_VIEW
+		  FROM TB_CM_HT_TEMPOPER_INSDATE_HIS E		      
+		 WHERE E.TMP_RACE_NUMBER = #tmpRaceNumber#
+		 ORDER BY E.SEQ DESC
+	</select>	
+	
+	<!-- 임시운행정보 보험가입일자 수정 -->
+	<update id="ReqConfirmDAO.updateTempOperInsdate" parameterClass="java.util.HashMap">
+		UPDATE TB_CM_HT_TEMPOPER
+		SET INS_INIT_DATE = DATE_FORAMT(#insInitDateU#,'%Y-%m-%d %H:%i:%s')
+		WHERE TMP_RACE_NUMBER = #tmpRaceNumber#
+	</update>	
+
+</sqlMap>

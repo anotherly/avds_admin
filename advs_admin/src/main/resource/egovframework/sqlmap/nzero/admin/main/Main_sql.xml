@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Main">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<!-- 임시등록번호 갯수 -->
+   <select id="MainDAO.selectTempOperTotCnt" parameterClass="java.util.HashMap" resultClass="int">
+   	/*MainDAO.selectTempOperTotCnt*/
+      SELECT COUNT(*) selcnt
+        FROM TB_CM_HT_TEMPOPER E
+       WHERE 1=1
+         AND E.APPOR_STATUS = '102'
+   </select>
+
+   <!-- 주행거리 정보 -->
+   <select id="MainDAO.selectDrivingInfo" parameterClass="java.util.HashMap" resultClass="egovMap">
+   /*MainDAO.selectDrivingInfo*/
+   <![CDATA[
+ 	  SELECT IFNULL(FORMAT(ROUND(SUM(A.Total_Driving_Dist)+ 197478, '999,999,999,999,999'), 0), '-') AS TOTAL_VIEW ,
+	  	IFNULL(FORMAT(ROUND(SUM(A.Auto_Driving_Dist)+ 127007, '999,999,999,999,999'), 0), '-') AS AUTO_VIEW ,
+	  	IFNULL(FORMAT(ROUND(SUM(A.Nomal_Driving_Dist)+ 70471, '999,999,999,999,999'), 0), '-') AS NOMAL_VIEW
+      FROM TB_CL_HT_DRIVING A
+      WHERE DATE_FORMAT(A.STND_DT, '%Y%m%d') 
+      BETWEEN 
+	 (
+      SELECT case when date_format(sysdate(), '%m%d') > data2 and ((case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end) = 'oper_input_sch_1') then CONCAT(date_format(sysdate(), '%Y')-1,'0701') 
+      		 	  when date_format(sysdate(), '%m%d') <= data2 and ((case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end) = 'oper_input_sch_1') then CONCAT(date_format(sysdate(), '%Y')-1,'0101') 
+				  when date_format(sysdate(), '%m%d') > data2 and ((case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end) = 'oper_input_sch_2') then CONCAT(IFNULL((date_format(sysdate(), '%Y')), '') , '0101')       		 	  
+      		 	  when date_format(sysdate(), '%m%d') <= data2 and ((case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end) = 'oper_input_sch_2') then CONCAT(date_format(sysdate(), '%Y')-1,'0701') 				  
+      		 end
+      FROM TB_CM_MT_PARAMETER
+      where param_id = case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end
+	  )
+      AND 
+      
+      (
+      SELECT case when date_format(sysdate(), '%m%d') > data2 and ((case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end) = 'oper_input_sch_1') then CONCAT(date_format(sysdate(), '%Y')-1,'1231')  
+      		 	  when date_format(sysdate(), '%m%d') <= data2 and ((case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end) = 'oper_input_sch_1') then CONCAT(date_format(sysdate(), '%Y')-1,'0630') 
+				  when date_format(sysdate(), '%m%d') > data2 and ((case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end) = 'oper_input_sch_2') then CONCAT(IFNULL((date_format(sysdate(), '%Y')), '') , '0630')       		 	  
+      		 	  when date_format(sysdate(), '%m%d') <= data2 and ((case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end) = 'oper_input_sch_2') then CONCAT(date_format(sysdate(), '%Y')-1,'1231') 				  
+      		 end
+      FROM TB_CM_MT_PARAMETER
+      where param_id = case when date_format(sysdate(), '%m%d') between '0101' and '0630' then 'oper_input_sch_1' else 'oper_input_sch_2' end
+      )
+   ]]>	
+   </select>
+
+   <!-- 데이터 건수 -->
+   <select id="MainDAO.selectDataTotCnt" parameterClass="java.util.HashMap" resultClass="int">
+   	/*MainDAO.selectDataTotCnt*/
+      SELECT COUNT(*) totcnt
+        FROM TB_WEB_HT_BOARD A
+   </select>
+
+   <!-- 데이터 용량 -->
+   <select id="MainDAO.selectDataTotVolume" parameterClass="java.util.HashMap" resultClass="String">
+   	/*MainDAO.selectDataTotVolume*/
+	SELECT FORMAT(IFNULL(SUM(TBL.FILE_SIZE),0),'1') AS FILE_SIZE FROM(
+		SELECT ROUND(SUM(A.FILE_SIZE)/1024/1024/1024,1) AS FILE_SIZE FROM TB_WEB_HT_APPEND A
+		UNION ALL
+		SELECT ROUND(SUM(A.FILE_SIZE)/1024/1024/1024,1) AS FILE_SIZE FROM TB_WEB_HT_APPEND_FILE A
+	)TBL
+   </select>
+
+	<!-- 데이터 사용현황 업다운 건수 -->
+	<select id="MainDAO.selectUpDnStatus" parameterClass="java.util.HashMap" resultClass="egovMap">
+		<![CDATA[
+		/*MainDAO.selectUpDnStatus*/
+		SELECT
+			  (SELECT FORMAT(ROUND(IFNULL(SUM(B.FILE_SIZE),0)/1024/1024/1024, '999,999,999,999'),2) AS FILE_SIZE  
+				 FROM  TB_WEB_HT_BOARD A, TB_WEB_HT_APPEND_FILE B
+				WHERE A.BBS_SEQ  = B.BBS_SEQ  
+				AND DATE_FORMAT(A.REG_DATE,'%Y%m%d') BETWEEN (SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW()) + 8) DAY), '%Y%m%d')) AND (SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW()) + 1) DAY), '%Y%m%d'))
+			  ) AS BU,
+			  (SELECT FORMAT(ROUND(IFNULL(SUM(A.FILE_SIZE),0)/1024/1024/1024, '999,999,999,999'),2) AS FILE_SIZE  
+				 FROM TB_WEB_HT_DOWNLOAD A
+				WHERE DATE_FORMAT(A.REG_DATE,'%Y%m%d') BETWEEN (SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW()) + 8) DAY), '%Y%m%d')) AND (SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW()) + 1) DAY), '%Y%m%d'))
+			  ) AS BD,
+			  (SELECT FORMAT(ROUND(IFNULL(SUM(B.FILE_SIZE),0)/1024/1024/1024, '999,999,999,999'),2) AS FILE_SIZE  
+				 FROM TB_WEB_HT_BOARD A, TB_WEB_HT_APPEND_FILE B
+				WHERE A.BBS_SEQ  = B.BBS_SEQ  
+				AND DATE_FORMAT(A.REG_DATE,'%Y%m%d') BETWEEN (SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW())+1) DAY), '%Y%m%d')) AND (SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW())-7) DAY), '%Y%m%d'))
+			  ) AS NU,
+			  (SELECT FORMAT(ROUND(IFNULL(SUM(A.FILE_SIZE),0)/1024/1024/1024, '999,999,999,999'),2) AS FILE_SIZE  
+				 FROM TB_WEB_HT_DOWNLOAD A
+				WHERE DATE_FORMAT(A.REG_DATE,'%Y%m%d') BETWEEN (SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW())+1) DAY), '%Y%m%d')) AND (SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW())-7) DAY), '%Y%m%d'))
+			  ) AS ND
+		 FROM DUAL 
+		 ]]>
+	</select>
+	
+	<!-- 데이터 사용현황 업로드 건수 목록
+	<select id="MainDAO.selectUploadCnt" parameterClass="java.util.HashMap" resultClass="egovMap">
+		/*MainDAO.selectUploadCnt*/
+		SELECT (@ROWNUM:= @ROWNUM+1)AS RNUM, REG_ID, UP_CNT
+		  FROM (SELECT A.REG_ID, COUNT(A.BBS_SEQ) AS UP_CNT
+		          FROM TB_WEB_HT_BOARD A, TB_WEB_HT_BBS B
+		         WHERE A.BBS_SEQ = B.BBS_SEQ
+		           AND B.BBS_GROUP_SEQ = 2000
+		          /* AND A.REG_DATE > DATE_SUB(NOW(), INTERVAL 7 DAY) */
+		         GROUP BY A.REG_ID
+		         ORDER BY UP_CNT DESC)T, (SELECT @ROWNUM:= 0) S1
+	</select> -->
+	
+	<!-- 데이터 사용현황 업로드 용량 목록 -->
+	<select id="MainDAO.selectUploadCnt" parameterClass="java.util.HashMap" resultClass="egovMap">
+		/*MainDAO.selectUploadCnt*/
+		SELECT 
+			<![CDATA[(@ROWNUM := @ROWNUM + 1)]]> AS RNUM, 
+			REGEXP_REPLACE(C.REG_ID, '<![CDATA[(?<=.{3}).]]>', '*') AS REG_ID, 
+			C.FILE_SIZE  
+		FROM 
+			(
+			SELECT
+				A.REG_ID,
+				FORMAT(ROUND(IFNULL(SUM(B.FILE_SIZE), 0)/ 1024 / 1024 / 1024, '999,999,999,999'), 2) AS FILE_SIZE
+			FROM
+				TB_WEB_HT_BOARD A,
+				TB_WEB_HT_APPEND_FILE B
+			WHERE
+				A.B_SEQ = B.B_SEQ
+			GROUP BY
+				A.REG_ID
+			ORDER BY
+				FILE_SIZE DESC) C, 
+			(SELECT
+				<![CDATA[@ROWNUM := 0]]>) S1 
+	</select>
+	
+	<!-- 사고발생 건수 -->
+	<select id="MainDAO.selectAccStatus" parameterClass="java.util.HashMap" resultClass="egovMap">
+		/*MainDAO.selectAccStatus*/
+		SELECT
+		      (SELECT IFNULL(SUM(AUTO_DRIVING_ACC_CNT),0)
+		         FROM TB_ST_HT_TEMP_AUTO_DAY A
+		        WHERE A.STND_DAY BETWEEN DATE_FORMAT(TRUNC(SYSDATE(), 'iw')-7, '%Y%m%d') AND DATE_FORMAT(TRUNC(SYSDATE(), 'iw')-1, '%Y%m%d')
+		      ) AS BU,
+		      (SELECT IFNULL(SUM(NOMAL_DRIVING_ACC_CNT),0)
+		         FROM TB_ST_HT_TEMP_AUTO_DAY A
+		        WHERE A.STND_DAY BETWEEN DATE_FORMAT(TRUNC(SYSDATE(), 'iw')-7, '%Y%m%d') AND DATE_FORMAT(TRUNC(SYSDATE(), 'iw')-1, '%Y%m%d')
+		      ) AS BD,
+		      (SELECT IFNULL(SUM(AUTO_DRIVING_ACC_CNT),0)
+		         FROM TB_ST_HT_TEMP_AUTO_DAY A
+		        WHERE A.STND_DAY BETWEEN DATE_FORMAT(TRUNC(SYSDATE(), 'iw'), '%Y%m%d') AND DATE_FORMAT(TRUNC(SYSDATE(), 'iw')+7, '%Y%m%d')
+		      ) AS NU,
+		      (SELECT IFNULL(SUM(NOMAL_DRIVING_ACC_CNT),0)
+		         FROM TB_ST_HT_TEMP_AUTO_DAY A
+		        WHERE A.STND_DAY BETWEEN DATE_FORMAT(TRUNC(SYSDATE(), 'iw'), '%Y%m%d') AND DATE_FORMAT(TRUNC(SYSDATE(), 'iw')+7, '%Y%m%d')
+		      ) AS ND
+		 FROM DUAL 		 
+	</select>
+	
+	<!-- 자율주행 사고발생 건수 목록 -->
+	<select id="MainDAO.selectAccList" parameterClass="java.util.HashMap" resultClass="egovMap">
+		/*MainDAO.selectAccList*/
+		SELECT ROWNUM AS RNUM, USER_ID, ACC_CNT        
+		  FROM (SELECT FN_CT_GET_AGENCY_NAME(A.USER_ID) AS USER_ID, IFNULL(SUM(A.AUTO_DRIVING_ACC_CNT),0) AS ACC_CNT
+		          FROM TB_ST_HT_USER_AUTO_DAY A
+		         WHERE A.STND_DAY > DATE_FORMAT(SYSDATE()-7, '%Y%m%d')
+		         GROUP BY A.USER_ID
+		         ORDER BY ACC_CNT DESC)		 
+	</select>	
+	
+	<!-- 통계현황그래프 
+	<select id="MainDAO.selectChart" parameterClass="java.util.HashMap" resultClass="egovMap">
+	/* QUERY ID : MainDAO.selectChart*/
+	<![CDATA[
+		SELECT MON.M, IFNULL(UP.UP_CNT,0) AS UP_CNT, IFNULL(DN.DN_CNT,0) AS DN_CNT, IFNULL(AC.ACC_CNT,0) AS ACC_CNT
+		  FROM (SELECT DATE_FORMAT(DATE_ADD(DATE_ADD(SYSDATE(), INTERVAL -5 DAY), INTERVAL - 1), '%Y-%m') AS M
+		          FROM DUAL
+		        CONNECT BY LEVEL <= MONTHS_BETWEEN(SYSDATE(), DATE_ADD(SYSDATE(), INTERVAL -5 DAY)) + 1) MON,
+		       (SELECT DATE_FORMAT(A.REG_DATE,'%Y-%m') AS M, SUM(A.B_SEQ) AS UP_CNT
+		          FROM TB_WEB_HT_BOARD A, TB_WEB_HT_BBS B
+		         WHERE A.BBS_SEQ = B.BBS_SEQ
+		           AND B.BBS_GROUP_SEQ = 2000
+		           AND A.REG_DATE > DATE_ADD(TRUNC(SYSDATE(),'%m'),-5)
+		         GROUP BY DATE_FORMAT(A.REG_DATE,'%Y-%m')) UP,
+		       (SELECT DATE_FORMAT(A.REG_DATE,'%Y-%m') AS M, SUM(A.B_SEQ) AS DN_CNT
+		          FROM TB_WEB_HT_DOWNLOAD A
+		         WHERE A.REG_DATE > DATE_ADD(TRUNC(SYSDATE(),'%m'),-5)
+		         GROUP BY DATE_FORMAT(A.REG_DATE,'%Y-%m')) DN,
+		       (SELECT SUBSTR(A.STND_MON,1,4)||'-'||SUBSTR(A.STND_MON,5,2) AS M, SUM(AUTO_DRIVING_ACC_CNT) AS ACC_CNT
+		          FROM TB_ST_HT_TEMP_AUTO_MON A
+		         WHERE A.STND_MON > DATE_FORMAT(DATE_ADD(TRUNC(SYSDATE(),'%m'),-5),'%Y%m')     
+		         GROUP BY A.STND_MON) AC
+		 WHERE MON.M = UP.M(+)
+		   AND MON.M = DN.M(+)
+		   AND MON.M = AC.M(+)
+		 ORDER BY MON.M ASC
+	]]>		 	 
+	</select>		-->
+	
+	<!-- DB 현황 
+	<select id="MainDAO.selectDBStatus" parameterClass="java.util.HashMap" resultClass="egovMap">
+	/* QUERY ID : MainDAO.selectDBStatus */
+	<![CDATA[
+		SELECT A.TABLESPACE_NAME,
+		       ((A.TOTBYTES - B.FREEBYTES) / 1024 / 1024) AS USED,
+		       (B.FREEBYTES / 1024 / 1024) AS FREE
+		  FROM (SELECT TABLESPACE_NAME, SUM(BYTES) TOTBYTES, SUM(BLOCKS) TOTBLOCKS
+		          FROM DBA_DATA_FILES
+		         GROUP BY TABLESPACE_NAME) A,
+		       (SELECT TABLESPACE_NAME, SUM(BYTES) FREEBYTES, SUM(BLOCKS) FREEBLOCKS
+		          FROM DBA_FREE_SPACE
+		         GROUP BY TABLESPACE_NAME) B
+		 WHERE A.TABLESPACE_NAME = B.TABLESPACE_NAME
+		   AND A.TABLESPACE_NAME LIKE '%TS_AVDS%'
+		 ORDER BY A.TABLESPACE_NAME
+	]]>		 	 		 		 
+	</select>	-->
+	
+	<select id="MainDAO.selectReserveList" parameterClass="java.util.HashMap" resultClass="egovMap">
+		/* QUERY ID : MainDAO.selectReserveList */
+		SELECT A.*
+					,DATE_FORMAT(A.REG_DATE, '%Y-%m-%d') AS REG_DATE_VIEW
+					,IF((SELECT COUNT(*) FROM TB_CL_HT_CARRESERVATION_FILE B WHERE A.RESERVATION_NUMBER = B.RESERVATION_NUMBER) > 0, 1, 0) AS ATTACHYN
+		  FROM TB_CL_HT_CARRESERVATION A
+	    WHERE 1=1
+			ORDER BY A.REG_DATE DESC
+	</select>
+</sqlMap>

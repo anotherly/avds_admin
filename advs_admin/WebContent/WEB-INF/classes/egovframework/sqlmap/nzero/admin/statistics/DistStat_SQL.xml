@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DistStat">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="DistStatDAO.selectMonAll" parameterClass="paramMap" resultClass="egovMap">
+		/* DistStatDAO.selectMonAll */
+		SELECT TRN,
+		       SUM(DECODE(SMON,'01',ACNT,'')) AS M01, SUM(DECODE(SMON,'02',ACNT,'')) AS M02,
+		       SUM(DECODE(SMON,'03',ACNT,'')) AS M03, SUM(DECODE(SMON,'04',ACNT,'')) AS M04,
+		       SUM(DECODE(SMON,'05',ACNT,'')) AS M05, SUM(DECODE(SMON,'06',ACNT,'')) AS M06,
+		       SUM(DECODE(SMON,'07',ACNT,'')) AS M07, SUM(DECODE(SMON,'08',ACNT,'')) AS M08,
+		       SUM(DECODE(SMON,'09',ACNT,'')) AS M09, SUM(DECODE(SMON,'10',ACNT,'')) AS M10,
+		       SUM(DECODE(SMON,'11',ACNT,'')) AS M11, SUM(DECODE(SMON,'12',ACNT,'')) AS M12,
+		       SUM(ACNT) AS TOT
+		  FROM (
+		        SELECT '전체' AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, AUTO_DRIVING_DIST AS ACNT
+		          FROM TB_ST_HT_TEMP_AUTO_MON
+		         WHERE 1=1
+				   AND STND_MON LIKE #sDate#||'%'		           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+
+	<select id="DistStatDAO.selectMonTemp" parameterClass="paramMap" resultClass="egovMap">
+		/* DistStatDAO.selectMonTemp */
+		SELECT TRN,
+		       SUM(DECODE(SMON,'01',ACNT,'')) AS M01, SUM(DECODE(SMON,'02',ACNT,'')) AS M02,
+		       SUM(DECODE(SMON,'03',ACNT,'')) AS M03, SUM(DECODE(SMON,'04',ACNT,'')) AS M04,
+		       SUM(DECODE(SMON,'05',ACNT,'')) AS M05, SUM(DECODE(SMON,'06',ACNT,'')) AS M06,
+		       SUM(DECODE(SMON,'07',ACNT,'')) AS M07, SUM(DECODE(SMON,'08',ACNT,'')) AS M08,
+		       SUM(DECODE(SMON,'09',ACNT,'')) AS M09, SUM(DECODE(SMON,'10',ACNT,'')) AS M10,
+		       SUM(DECODE(SMON,'11',ACNT,'')) AS M11, SUM(DECODE(SMON,'12',ACNT,'')) AS M12,
+		       SUM(ACNT) AS TOT
+		  FROM (
+		        SELECT TMP_RACE_NUMBER AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, AUTO_DRIVING_DIST AS ACNT
+		          FROM TB_ST_HT_TEMP_AUTO_MON
+		         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+				   AND TMP_RACE_NUMBER LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>
+				   AND STND_MON LIKE #sDate#||'%'		           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+
+	<select id="DistStatDAO.selectMonUser" parameterClass="paramMap" resultClass="egovMap">
+		/* DistStatDAO.selectMonUser */
+		SELECT TRN,
+		       SUM(DECODE(SMON,'01',ACNT,'')) AS M01, SUM(DECODE(SMON,'02',ACNT,'')) AS M02,
+		       SUM(DECODE(SMON,'03',ACNT,'')) AS M03, SUM(DECODE(SMON,'04',ACNT,'')) AS M04,
+		       SUM(DECODE(SMON,'05',ACNT,'')) AS M05, SUM(DECODE(SMON,'06',ACNT,'')) AS M06,
+		       SUM(DECODE(SMON,'07',ACNT,'')) AS M07, SUM(DECODE(SMON,'08',ACNT,'')) AS M08,
+		       SUM(DECODE(SMON,'09',ACNT,'')) AS M09, SUM(DECODE(SMON,'10',ACNT,'')) AS M10,
+		       SUM(DECODE(SMON,'11',ACNT,'')) AS M11, SUM(DECODE(SMON,'12',ACNT,'')) AS M12,
+		       SUM(ACNT) AS TOT
+		  FROM (
+		        SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, AUTO_DRIVING_DIST AS ACNT
+		          FROM TB_ST_HT_USER_AUTO_MON
+		         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+				   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>
+				   AND STND_MON LIKE #sDate#||'%'		           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="DistStatDAO.selectMonAllChart" parameterClass="paramMap" resultClass="egovMap">
+		/* DistStatDAO.selectMonAllChart */
+        SELECT '전체' AS TRN, TO_CHAR(TO_DATE(STND_MON,'YYYYMM'),'MM')||'월' AS STERM, SUM(AUTO_DRIVING_DIST) AS ACNT
+          FROM TB_ST_HT_TEMP_AUTO_MON
+         WHERE 1=1
+		   AND STND_MON LIKE #sDate#||'%' 
+		 GROUP BY STND_MON
+		 ORDER BY STERM
+	</select>
+
+	<select id="DistStatDAO.selectMonTempChart" parameterClass="paramMap" resultClass="egovMap">
+		/* DistStatDAO.selectMonTempChart */
+        SELECT TMP_RACE_NUMBER AS TRN, TO_CHAR(TO_DATE(STND_MON,'YYYYMM'),'MM')||'월' AS STERM, AUTO_DRIVING_DIST AS ACNT
+          FROM TB_ST_HT_TEMP_AUTO_MON
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>
+		   AND STND_MON LIKE #sDate#||'%' 
+		 ORDER BY STERM, TRN
+	</select>
+
+	<select id="DistStatDAO.selectMonUserChart" parameterClass="paramMap" resultClass="egovMap">
+		/* DistStatDAO.selectMonUserChart */
+        SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, TO_CHAR(TO_DATE(STND_MON,'YYYYMM'),'MM')||'월' AS STERM, AUTO_DRIVING_DIST AS ACNT
+          FROM TB_ST_HT_USER_AUTO_MON
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>
+		   AND STND_MON LIKE #sDate#||'%' 
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="DistStatDAO.selectYearAll" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* DistStatDAO.selectYearAll */
+		WITH PV AS (
+		SELECT '전체' AS TRN, NVL(STND_YEAR,-1) AS SYEAR, SUM(AUTO_DRIVING_DIST) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1	
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY CUBE(STND_YEAR)	        
+		)
+		SELECT *
+		  FROM PV
+		 PIVOT (SUM(ACNT) FOR SYEAR IN 
+		 <iterate property="yearList" open="(" close=", -1 AS TOT)" conjunction=",">
+		 	$yearList[]$ 
+		 </iterate>
+		 )
+		 WHERE TRN IS NOT NULL
+		 ORDER BY TRN		
+	</select>	
+	
+	<select id="DistStatDAO.selectYearTemp" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* DistStatDAO.selectYearTemp */
+		WITH PV AS (
+		SELECT TMP_RACE_NUMBER AS TRN, NVL(STND_YEAR,-1) AS SYEAR, SUM(AUTO_DRIVING_DIST) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY CUBE(TMP_RACE_NUMBER, STND_YEAR)	        
+		)
+		SELECT *
+		  FROM PV
+		 PIVOT (SUM(ACNT) FOR SYEAR IN 
+		 <iterate property="yearList" open="(" close=", -1 AS TOT)" conjunction=",">
+		 	$yearList[]$ 
+		 </iterate>
+		 )
+		 WHERE TRN IS NOT NULL
+		 ORDER BY TRN		 
+	</select>	
+	
+	<select id="DistStatDAO.selectYearUser" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* DistStatDAO.selectYearUser */
+		WITH PV AS (
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, NVL(STND_YEAR,-1) AS SYEAR, SUM(AUTO_DRIVING_DIST) AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY CUBE(FN_CT_GET_AGENCY_NAME(USER_ID), STND_YEAR)	        
+		)
+		SELECT *
+		  FROM PV
+		 PIVOT (SUM(ACNT) FOR SYEAR IN 
+		 <iterate property="yearList" open="(" close=", -1 AS TOT)" conjunction=",">
+		 	$yearList[]$ 
+		 </iterate>
+		 )
+		 WHERE TRN IS NOT NULL
+		 ORDER BY TRN		 
+	</select>	
+	
+	<select id="DistStatDAO.selectYearAllChart" parameterClass="paramMap" resultClass="egovMap">
+		/* DistStatDAO.selectYearAllChart */
+		SELECT '전체' AS TRN, STND_YEAR||'년' AS STERM, SUM(AUTO_DRIVING_DIST) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 GROUP BY STND_YEAR
+		 ORDER BY STERM
+	</select>
+	
+	<select id="DistStatDAO.selectYearTempChart" parameterClass="paramMap" resultClass="egovMap">
+		/* DistStatDAO.selectYearTempChart */
+		SELECT TMP_RACE_NUMBER AS TRN, STND_YEAR||'년' AS STERM, AUTO_DRIVING_DIST AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+
+	<select id="DistStatDAO.selectYearUserChart" parameterClass="paramMap" resultClass="egovMap">
+		/* DistStatDAO.selectYearUserChart */
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, STND_YEAR||'년' AS STERM, AUTO_DRIVING_DIST AS ACNT
+		  FROM TB_ST_HT_USER_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(USER_ID) LIKE '%'||#sKeyword#||'%'
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+		
+</sqlMap>

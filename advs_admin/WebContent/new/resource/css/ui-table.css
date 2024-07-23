@@ -1,0 +1,99 @@
+.el-table {
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ebeef2;
+  border-collapse: collapse;
+}
+.el-table th {
+  padding: 11px 9px;
+  background-color: #f7f8fa;
+  border: 1px solid #ebeef2;
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: #000;
+  vertical-align: middle;
+  text-align: center;
+}
+ 
+.el-table td {
+  padding: 11px 9px;
+  border: 1px solid #ebeef2;
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: #000;
+  border-top: none;
+  vertical-align: middle;
+  text-align: left;
+}
+/* .el-table tr {
+	cursor : pointer;
+}
+.el-table td.el-table-click{
+	background-color: #ebeef2;
+} */
+
+.el-table td.form-wrap--table {
+  padding: 3px 9px;
+}
+.el-table-wrap {
+  width: 100%;
+}
+.el-table-noData {
+  height: 100%;
+}
+.el-table-noData td[colspan] {
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+}
+@media (min-width: 1700px) {
+  .el-table.lay-item--1100 {
+    width: 100%;
+  }
+}
+@media (min-width: 1800px) {
+  .el-table.lay-item--1200 {
+    width: 100%;
+  }
+}
+@media (min-width: 1900px) {
+  .el-table.lay-item--1300 {
+    width: 100%;
+  }
+}
+
+.ui-table-fixHead {
+  border: 1px solid #ebeef2;
+}
+.ui-table-fixHead table {
+  border: none;
+}
+.ui-table-fixHead thead th {
+  position: sticky;
+  top: 0;
+  border-top: none;
+}
+.ui-table-fixHead thead th:first-child {
+  border-left: none;
+}
+.ui-table-fixHead thead th:last-child {
+  border-right: none;
+}
+.ui-table-fixHead thead th::after {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: #ebeef2;
+  content: "";
+}
+.ui-table-fixHead td:first-child {
+  border-left: none;
+}
+.ui-table-fixHead td:last-child {
+  border-right: none;
+}
+.ui-table-fixHead tr:last-child td {
+  border-bottom: none;
+}

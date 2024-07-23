@@ -1,0 +1,31 @@
+@charset 'utf-8';
+@import 'mixin';
+@import '../../node_modules/@euid/scss-mixins';
+@import '../../node_modules/flexbox-grid-mixins/sass/flexbox-grid-mixins';
+
+.boxItem{
+    &-index{
+        @include flex-c(row items-center justify-between);
+    }
+}
+
+.el{
+    &-table{
+        &--dataUse{
+            th{
+                text-align:center;
+            }
+            td{
+                text-align:center;
+            }
+        }
+        &--accident{
+            th{
+                text-align:center;
+            }
+            td{
+                text-align:center;
+            }
+        }
+    }
+}

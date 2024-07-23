@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="NewTrends">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+
+	<resultMap id="newTrendsMap" class="java.util.HashMap">
+	    <result property="bSeq"				column="BDWR_SEQ"/>
+	    <result property="bTitle"			column="BDWR_TTL_NM"/>
+	    <result property="bContent"			column="BDWR_CTS" jdbcType="CLOB" javaType="java.lang.String"/>
+	    <result property="attachFileNm"		column="ATTACH_FILENAME"/>
+	    <result property="attachFileSize"	column="FILE_SIZE"/>
+	    <result property="gpbcYn"			column="GPBC_YN"/>
+	    <result property="bRtng"			column="BDWR_RTNG_CD"/>
+	    <result property="updateId"			column="UPDATE_ID"/>
+	    <result property="updateDate"		column="UPDATE_DATE"/>
+	    <result property="regId"			column="REG_ID"/>
+	    <result property="regDate"			column="REG_DATE"/>
+	</resultMap>
+
+	<parameterMap id="newTrendsParamMap" class="java.util.HashMap">
+		<parameter property="boardSeq"/>
+		<parameter property="boardTitle"/>
+		<parameter property="boardContents" jdbcType="CLOB"/>
+		<parameter property="attachFileNm"/>
+		<parameter property="attachFileSize"/>
+		<parameter property="gpbcYn"/>
+		<parameter property="rtngCd"/>
+		<parameter property="userId"/>
+	</parameterMap>
+
+	<!-- 목록 조회 -->
+	<select id="NewTrendsDAO.selectNewTrendsList" parameterClass="java.util.HashMap" resultClass="egovMap">
+		SELECT BDWR_SEQ,
+               BDWR_TTL_NM,
+               ATTACH_FILENAME,
+               FILE_SIZE,
+               GPBC_YN,
+               BDWR_RTNG_CD,
+               UPDATE_ID,
+               TO_CHAR(UPDATE_DATE, 'YYYY-MM-DD HH24:MI') AS UPDATE_DATE,
+               REG_ID,
+               TO_CHAR(REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE
+          FROM TB_WEB_HT_BLBD
+         WHERE 1=1 
+           AND BLBD_DIV_CD = '102'                   
+		<isNotEmpty prepend="AND" property="sKeyword">
+			BDWR_TTL_NM LIKE '%' || #sKeyword# || '%'
+		</isNotEmpty>
+         ORDER BY BDWR_RTNG_CD DESC, BDWR_SEQ DESC
+	</select>
+
+	<!-- 상세내용 -->
+	<select id="NewTrendsDAO.selectNewTrendsInfo" parameterClass="java.util.HashMap" resultMap="newTrendsMap">
+		SELECT BDWR_SEQ,
+               BDWR_TTL_NM,
+               BDWR_CTS,
+               ATTACH_FILENAME,
+               FILE_SIZE,
+               GPBC_YN,
+               BDWR_RTNG_CD,
+               UPDATE_ID,
+               TO_CHAR(UPDATE_DATE, 'YYYY-MM-DD HH24:MI') AS UPDATE_DATE,
+               REG_ID,
+               TO_CHAR(REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE
+          FROM TB_WEB_HT_BLBD
+         WHERE 1=1 
+           AND BLBD_DIV_CD = '102'  
+           AND BDWR_SEQ = #boardSeq#
+	</select>
+	
+	<!-- 등록 -->
+	<insert id="NewTrendsDAO.insertNewTrends" parameterClass="java.util.HashMap">
+		INSERT 
+		  INTO TB_WEB_HT_BLBD
+		       (BLBD_DIV_CD,
+		        BDWR_SEQ, 
+		        BDWR_DIV_CD,
+		        BDWR_TTL_NM,
+		        BDWR_CTS,
+		        ATTACH_FILENAME,
+		        FILE_SIZE,
+		        GPBC_YN,
+		        BDWR_RTNG_CD,
+		        REG_ID,
+		        REG_DATE)
+		VALUES ('102',
+		        (SELECT NVL(MAX(BDWR_SEQ),0)+1
+				   FROM TB_WEB_HT_BLBD
+				  WHERE BLBD_DIV_CD = '102'),
+				'101',
+				#boardTitle#,
+				#boardContents#,
+				#attachFileNm#,
+				#attachFileSize#,
+				#gpbcYn#,
+				#rtngCd#,
+				#userId#,
+				SYSDATE)
+	</insert>
+	
+	<!-- 수정 -->
+	<update id="NewTrendsDAO.updateNewTrends" parameterClass="java.util.HashMap">
+	<![CDATA[
+          UPDATE TB_WEB_HT_BLBD
+             SET BDWR_TTL_NM   	= #boardTitle#,
+                 BDWR_CTS     	= #boardContents#,
+                 ATTACH_FILENAME= #attachFileNm#,
+                 FILE_SIZE   	= #attachFileSize#,
+                 GPBC_YN 		= #gpbcYn#,
+                 BDWR_RTNG_CD   = #rtngCd#,
+                 UPDATE_ID 		= #userId#,
+                 UPDATE_DATE    = SYSDATE       
+           WHERE BLBD_DIV_CD = '102'
+             AND BDWR_SEQ = #boardSeq#
+    ]]>
+	</update>
+	
+	<!-- 삭제 -->
+	<delete id="NewTrendsDAO.deleteNewTrends" parameterClass="java.util.HashMap">
+		DELETE 
+		  FROM TB_WEB_HT_BLBD
+		 WHERE BLBD_DIV_CD = '102'
+		   AND BDWR_SEQ = #boardSeq#
+	</delete>
+
+</sqlMap>

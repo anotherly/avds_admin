@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DevcHist">
+
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+
+	<!-- 장치 및 기능변경 목록 조회 -->
+	<select id="DevcHistDAO.selectDevcHistList" parameterClass="paramMap" resultClass="egovMap">
+    SELECT A.*
+          ,DATE_FORMAT(A.MODIFY_DATE, '%Y-%m-%d %H:%i') AS MODIFY_DATE_VIEW
+          ,DATE_FORMAT(A.REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE_VIEW
+          ,CASE WHEN A.DRIVING_MODE_CHANGE_YN ='Y' THEN '변경' ELSE '-' END AS DRIVING_MODE_CHANGE_VIEW
+          ,CASE WHEN A.SPD_RANGE_CHANGE_YN ='Y' THEN '변경' ELSE '-' END AS SPD_RANGE_CHANGE_VIEW
+          ,CASE WHEN A.DEVICE_CHANGE_YN ='Y' THEN '변경' ELSE '-' END AS DEVICE_CHANGE_VIEW
+          ,ROUND((A.REG_DATE - A.MODIFY_DATE),0) - CONCAT(CAST(IFNULL(B.DATA1,0) AS INTEGER), ' 일 경과') AS COLDIFF
+      FROM TB_CL_HT_DEVICECHANGE A
+          ,(SELECT DATA1 FROM TB_CM_MT_PARAMETER WHERE PARAM_ID = 'defice_ch_eff_date') B
+     WHERE 1=1
+		<isNotEmpty prepend="AND" property="sChgId">
+			A.CHANGE_ID = #sChgId#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sTmpNo">
+			A.TMP_RACE_NUMBER = #sTmpNo#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sTmpAg">
+			A.TMP_RACE_AGENCY LIKE CONCAT('%', #sTmpAg#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="stdate">
+			A.MODIFY_DATE BETWEEN DATE_FORMAT(CONCAT(#stdate#, ' 00:00:00'), '%Y-%m-%d %H:%i:%s') AND DATE_FORMAT(CONCAT(#eddate#, ' 23:59:59'), '%Y-%m-%d %H:%i:%s')
+		</isNotEmpty>
+		 ORDER BY A.REG_DATE DESC
+	</select>
+
+	<!-- Excel : 장치 및 기능변경 목록 조회 -->
+	<select id="DevcHistDAO.selectDevcExcelList" parameterClass="paramMap" resultClass="egovMap">
+    SELECT A.*
+          ,DATE_FORMAT(A.MODIFY_DATE, '%Y-%m-%d %H:%i') AS MODIFY_DATE_VIEW
+          ,DATE_FORMAT(A.REG_DATE, '%Y-%m-%d %H:%i') AS REG_DATE_VIEW
+          ,CASE WHEN A.DRIVING_MODE_CHANGE_YN ='Y' THEN '변경' ELSE '-' END AS DRIVING_MODE_CHANGE_VIEW
+          ,CASE WHEN A.SPD_RANGE_CHANGE_YN ='Y' THEN '변경' ELSE '-' END AS SPD_RANGE_CHANGE_VIEW
+          ,CASE WHEN A.DEVICE_CHANGE_YN ='Y' THEN '변경' ELSE '-' END AS DEVICE_CHANGE_VIEW
+          ,ROUND((A.REG_DATE - A.MODIFY_DATE),0) - CONCAT(CAST(IFNULL(B.DATA1,0) AS INTEGER), ' 일 경과') AS COLDIFF
+      FROM TB_CL_HT_DEVICECHANGE A
+          ,(SELECT DATA1 FROM TB_CM_MT_PARAMETER WHERE PARAM_ID = 'defice_ch_eff_date') B
+     WHERE 1=1
+		<isNotEmpty prepend="AND" property="sTmpNo">
+			A.TMP_RACE_NUMBER = #sTmpNo#
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sTmpAg">
+			A.TMP_RACE_AGENCY LIKE CONCAT('%', #sTmpAg#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="stdate">
+			A.MODIFY_DATE BETWEEN DATE_FORMAT(CONCAT(#stdate#, ' 00:00:00'), '%Y-%m-%d %H:%i:%s') AND DATE_FORMAT(CONCAT(#eddate#, ' 23:59:59'), '%Y-%m-%d %H:%i:%s')
+		</isNotEmpty>
+		 ORDER BY A.REG_DATE DESC
+	</select>
+
+</sqlMap>

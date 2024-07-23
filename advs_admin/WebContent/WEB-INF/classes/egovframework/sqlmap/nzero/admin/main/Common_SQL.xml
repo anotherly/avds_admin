@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Common">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="CommonDAO.selectCodeComboBox" parameterClass="paramMap" resultClass="egovMap">
+		/* CommonDAO.selectCodeComboBox */
+		SELECT CODE_CD
+			 , CODE_DETL_CD
+			 , CODE_DETL_NM
+			 , REF_VAL1
+			 , REF_VAL2
+			 , REF_VAL3
+			 , DISP_ORDR
+			 , USE_YN
+		  FROM TB_CM_CT_DETAILCODE
+		 WHERE CODE_CD = #sCodeCd#
+		   AND USE_YN = #sUseYn#
+		<isNotEmpty prepend="AND" property="sRefVal1">
+		   REF_VAL1 = #sRefVal1#
+		</isNotEmpty>
+	     ORDER BY CODE_CD, DISP_ORDR, CODE_DETL_CD
+	</select>
+	
+</sqlMap>

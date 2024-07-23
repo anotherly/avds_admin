@@ -1,0 +1,34 @@
+@charset "utf-8";
+@import url("base.css");
+
+
+/* 로그인 */
+.login{ background: #e6e9ed; z-index: 9;}
+.loginWrapper{position:relative; margin:0 auto; height:100%; }
+.loginWrap{position:absolute; top:50%; left:50%; width:500px; margin-left:-250px; margin-top:150px; height:580px; padding:30px; transform:translateY(0%);  background: #fff; box-shadow: 5px 15px 30px rgba(0,0,0,0.1); }
+
+.loginWrap dl{border-bottom:1px solid #eee; padding-bottom:20px;}
+.loginWrap dt{height:100px; background: url(/images/login/login_h1.jpg) 50% 0% no-repeat;}
+
+.loginWrap dd:before{clear:both; display:block; content:''; width:30px; height:1px; background:#ddd; margin:0 auto; }
+.loginWrap dd{height:70px; line-height: 70px; color:#444; text-align: center; font-size:26px; font-weight: bold;}
+
+.loginWrap .cont{padding:50px 45px 0 45px;}
+.loginWrap .cont p{margin-bottom:10px;}
+.loginWrap .cont ul{}
+.loginWrap .cont ul li{position:relative;}
+.loginWrap .cont ul li i{position:absolute; top:10px; left:10px; width:40px; height:40px; line-height: 40px; text-align: center; font-size:18px;  z-index: 2; }
+.loginWrap .cont ul li .ico_user{background: url(/images/login/ico_user.png) 50% 50% no-repeat; background-size:20px; }
+.loginWrap .cont ul li .ico_pw{background: url(/images/login/ico_pw.png) 50% 50% no-repeat;  background-size:20px;  }
+.loginWrap .cont ul li input{width:100%; height:60px; line-height: 60px; padding-left:60px; border:1px solid #d8d8d8; background: #f6f9fb; font-size:16px; color:#333; z-index: 1;}
+.loginWrap .cont ul li:last-child{margin-top:-1px;}
+.loginWrap .cont a.btn_login{display:block; width:100%; height:70px; line-height: 70px; margin-top:20px; border-radius: 5px; color:#fff; background: #00a5e2; font-size:20px; text-align: center;}
+
+.loginWrap .cont a.btn_login:hover{background: #0084b5 ;}
+
+
+/* placeholder */
+.loginWrap input::-webkit-input-placeholder{color:#bdc1c6; letter-spacing: -0.05em;}
+.loginWrap :-moz-placeholder{color:#bdc1c6; letter-spacing: -0.05em;}/* FF 4-18 */
+.loginWrap ::-moz-placeholder{color:#bdc1c6; letter-spacing: -0.05em;}/* FF 19+ */
+.loginWrap :-ms-input-placeholder{color:#bdc1c6; letter-spacing: -0.05em;}/* IE 10+ */

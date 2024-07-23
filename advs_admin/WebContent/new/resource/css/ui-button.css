@@ -1,0 +1,11 @@
+.boxItem__reset {
+  margin-left: auto;
+  -webkit-transform: rotate(0);
+          transform: rotate(0);
+}
+.boxItem__reset.fn-reset {
+  -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+  -webkit-transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+}

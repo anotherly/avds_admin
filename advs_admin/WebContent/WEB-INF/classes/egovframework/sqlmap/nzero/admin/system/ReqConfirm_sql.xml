@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ReqConfirm">
+
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+
+	<!-- 목록 조회 -->
+	<select id="ReqConfirmDAO.selectReqConfirmList" parameterClass="paramMap" resultClass="egovMap">
+		WITH REQ_LIST AS (
+		SELECT 'T' AS REQ_TP, '임시운행번호등록요청' AS REQ_TP_NM,
+		       TMP_RACE_NUMBER AS REQ_ID, USER_ID, 
+           (SELECT USER_NM FROM TB_WEB_IT_USER WHERE USER_ID = TB_CM_HT_TEMPOPER.USER_ID) AS USER_NM,
+           (SELECT AGENCY_CD FROM TB_WEB_IT_USER WHERE USER_ID = TB_CM_HT_TEMPOPER.USER_ID) AS AGENCY_CD,
+		       TO_CHAR(REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE,
+		       APPOR_STATUS AS STATUS_CD, fn_ct_get_code_name('appor_status', APPOR_STATUS) AS STATUS_NM
+		  FROM TB_CM_HT_TEMPOPER
+		UNION ALL
+		SELECT 'U' AS REQ_TP, '권한승인요청' AS REQ_TP_NM,
+		       USER_ID AS REQ_ID, USER_ID, 
+           USER_NM,
+           AGENCY_CD,
+		       TO_CHAR(REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE,
+		       APPOR_STATUS AS STATUS_CD, fn_ct_get_code_name('appor_status', APPOR_STATUS) AS STATUS_NM
+		  FROM TB_WEB_IT_USER
+		)
+		SELECT REQ_TP, REQ_TP_NM, REQ_ID, USER_ID, USER_NM, AGENCY_CD, REG_DATE, STATUS_CD, STATUS_NM
+		  FROM REQ_LIST
+		<isNotEmpty prepend="WHERE" property="sReqType">  
+		 	REQ_TP = #sReqType#
+		</isNotEmpty> 
+		 ORDER BY REG_DATE DESC         
+	</select>
+
+	<!-- 상세내용 -->
+	<select id="ReqConfirmDAO.selectReqConfirmInfo_T" parameterClass="paramMap" resultClass="egovMap">
+		SELECT '임시운행번호등록요청' AS REQ_TP_NM, 
+		       TMP_RACE_NUMBER,
+		       TMP_RACE_AGENCY,
+		       INS_LETTER_NUMBER,
+		       TO_CHAR(INS_INIT_DATE, 'YYYY-MM-DD') AS INS_INIT_DATE,
+		       DEED_FILENAME,
+		       USER_ID,
+           (SELECT USER_NM FROM TB_WEB_IT_USER WHERE USER_ID = TB_CM_HT_TEMPOPER.USER_ID) AS USER_NM,
+           (SELECT AGENCY_CD FROM TB_WEB_IT_USER WHERE USER_ID = TB_CM_HT_TEMPOPER.USER_ID) AS AGENCY_CD,
+		       APPOR_STATUS,
+		       CNCL_NOTE,
+		       TO_CHAR(REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE,
+		       CAR_MODEL,
+		       POWER_SOURCE
+		  FROM TB_CM_HT_TEMPOPER
+		 WHERE TMP_RACE_NUMBER = #reqId#
+	</select>
+
+	<!-- 상세내용 -->
+	<select id="ReqConfirmDAO.selectReqConfirmInfo_U" parameterClass="paramMap" resultClass="egovMap">
+		SELECT '권한승인요청' AS REQ_TP_NM, 
+		       USER_ID,
+           USER_NM,
+           AGENCY_CD,
+           AUTH_CD,
+           fn_ct_get_code_name('auth_cd',AUTH_CD) AS AUTH_NM,
+		       fn_ct_get_code_name('class_id',CLASS_ID) AS CLASS_NM,
+		       APPOR_STATUS,
+		       CNCL_NOTE,
+		       TO_CHAR(REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE
+		  FROM TB_WEB_IT_USER
+		 WHERE USER_ID = #reqId#           
+	</select>
+	
+	<!-- 임시운행등록번호 중복체크 -->
+	<select id="ReqConfirmDAO.checkDuplNumber" parameterClass="paramMap" resultClass="egovMap">
+		SELECT TMP_RACE_NUMBER,
+		       USER_ID
+		  FROM TB_CM_HT_TEMPOPER
+		 WHERE TMP_RACE_NUMBER = #tmpRaceNumber#
+	</select>
+	
+	<!-- 수정 -->
+	<update id="ReqConfirmDAO.updateReqConfirm_T" parameterClass="paramMap">
+	<![CDATA[
+          UPDATE TB_CM_HT_TEMPOPER
+             SET APPOR_STATUS  	= #apporStatus#,
+             	 TMP_RACE_NUMBER = #tmpRaceNumber#,
+                 CNCL_NOTE     	= #cnclNote#   
+           WHERE TMP_RACE_NUMBER = #reqId#
+    ]]>
+	</update>
+	
+	<!-- 수정 -->
+	<update id="ReqConfirmDAO.updateReqConfirm_U" parameterClass="paramMap">
+	<![CDATA[
+          UPDATE TB_WEB_IT_USER
+             SET APPOR_STATUS  	= #apporStatus#,
+                 USE_YN = 'Y',
+                 AUTH_CD = #authCd#,
+                 CNCL_NOTE     	= #cnclNote#   
+           WHERE USER_ID = #reqId#
+    ]]>
+	</update>
+	
+	<!-- 삭제 -->
+	<delete id="ReqConfirmDAO.deleteReqConfirm_T" parameterClass="java.util.HashMap">
+		DELETE 
+		  FROM TB_CM_HT_TEMPOPER
+		 WHERE TMP_RACE_NUMBER = #reqId#
+	</delete>
+	
+	<!-- 삭제 -->
+	<delete id="ReqConfirmDAO.deleteReqConfirm_U" parameterClass="java.util.HashMap">
+		DELETE 
+		  FROM TB_WEB_IT_USER
+		 WHERE USER_ID = #reqId#
+	</delete>
+
+</sqlMap>

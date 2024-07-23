@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ControlStat">
+	
+	<typeAlias  alias="paramMap" type="java.util.Map"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="ControlStatDAO.selectMonAll" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectMonAll 전체 제어권별 주행거리_월별 */
+		SELECT TRN
+		       	   , SUM(CASE WHEN SMON = '01' THEN ACNT ELSE '' END) AS M01
+		       	   , SUM(CASE WHEN SMON = '02' THEN ACNT ELSE '' END) AS M02
+		       	   , SUM(CASE WHEN SMON = '03' THEN ACNT ELSE '' END) AS M03
+		       	   , SUM(CASE WHEN SMON = '04' THEN ACNT ELSE '' END) AS M04
+		       	   , SUM(CASE WHEN SMON = '05' THEN ACNT ELSE '' END) AS M05
+		       	   , SUM(CASE WHEN SMON = '06' THEN ACNT ELSE '' END) AS M06
+		       	   , SUM(CASE WHEN SMON = '07' THEN ACNT ELSE '' END) AS M07
+		       	   , SUM(CASE WHEN SMON = '08' THEN ACNT ELSE '' END) AS M08		       	   
+		       	   , SUM(CASE WHEN SMON = '09' THEN ACNT ELSE '' END) AS M09
+		       	   , SUM(CASE WHEN SMON = '10' THEN ACNT ELSE '' END) AS M10
+		       	   , SUM(CASE WHEN SMON = '11' THEN ACNT ELSE '' END) AS M11
+		       	   , SUM(CASE WHEN SMON = '12' THEN ACNT ELSE '' END) AS M12
+		       	   , ROUND(AVG(ACNT),2) AS TOT
+		  FROM (
+		        SELECT
+						'전체' AS TRN,
+						SUBSTR(CHC.CTR_CHANGE_MON, 1, 4) AS SYEAR,
+						SUBSTR(CHC.CTR_CHANGE_MON, 5, 2) AS SMON,
+						CHA.AUTO_DRIVING_DIST AS ACNT
+					FROM TB_CL_HT_AUTODRIVING CHA 
+						INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+						        ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)  
+					WHERE 1 = 1
+						AND CHC.CTR_CHANGE_MON LIKE CONCAT(#sDate#, '%')
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="ControlStatDAO.selectMonAllChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectMonAllChart 전체 제어권별 주행거리 차트_월별 */
+       SELECT
+			'전체' AS TRN,
+			CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 5, 2), '월') AS STERM,
+			SUM(CHA.AUTO_DRIVING_DIST) AS ACNT
+		FROM TB_CL_HT_AUTODRIVING CHA 
+		INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+		ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)
+		WHERE 1 = 1
+		  AND CHA.DRIVING_DIST_MON LIKE CONCAT(#sDate#, '%')
+		   <isNotEmpty property="sKeyword">
+		   AND CHA.TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		GROUP BY CHA.DRIVING_DIST_MON
+		ORDER BY STERM
+	</select>
+
+	<select id="ControlStatDAO.selectSemiAnnualAll" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* ControlStatDAO.selectSemiAnnualAll 전체 제어권별 주행거리_반기별*/
+		WITH PV AS (
+			SELECT '전체' AS TRN
+					, IFNULL(CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4), CASE WHEN SUBSTRING(CHA.DRIVING_DIST_MON,  5, 2) BETWEEN '01' AND '06' THEN '01' ELSE '02' END),-1) AS SYEAR
+					, ROUND(IFNULL(AVG(CHA.AUTO_DRIVING_DIST), 0), 2) AS ACNT
+				FROM TB_CL_HT_AUTODRIVING CHA 
+				INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+				ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)
+				WHERE 1=1	
+				AND SUBSTR(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#
+				GROUP BY SYEAR
+		)	
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , AVG(ACNT) AS TOT
+		  FROM PV	
+				 WHERE TRN IS NOT NULL
+		 ORDER BY TRN		 
+	</select>
+
+	<select id="ControlStatDAO.selectSemiAnnualAllChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectSemiAnnualAllChart 전체 제어권별 주행거리 차트_반기별*/
+		SELECT '전체' AS TRN
+					, IFNULL(CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4), CASE WHEN SUBSTRING(CHA.DRIVING_DIST_MON,  5, 2) BETWEEN '01' AND '06' THEN '전반기' ELSE '하반기' END),-1) AS STERM
+					, ROUND(IFNULL(AVG(CHA.AUTO_DRIVING_DIST), 0), 2) AS ACNT
+		  FROM TB_CL_HT_AUTODRIVING CHA 
+		INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+		ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)
+		 WHERE 1=1		
+		   AND SUBSTR(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#
+		   <isNotEmpty property="sKeyword">
+		   AND CHA.TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		  GROUP BY STERM
+		 ORDER BY STERM
+	</select>
+	
+	<select id="ControlStatDAO.selectYearAll" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* ControlStatDAO.selectYearAll 전체 제어권별 주행거리_년도별 */
+		WITH PV AS (
+		SELECT '전체' AS TRN, IFNULL(SUBSTRING(STND_DT, 1, 4),-1) AS SYEAR, AVG(AUTO_DRIVING_DIST) AS ACNT
+		  FROM TB_CL_HT_AUTODRIVING
+		 WHERE 1=1	
+		   AND SUBSTRING(STND_DT, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY SYEAR	        
+		)
+		SELECT 
+				TRN,
+				 <iterate property="yearList" open="" close="" conjunction=",">
+				 	SUM(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END) AS '$yearList[]$'
+				 </iterate>
+				 , AVG(ACNT) AS TOT
+		  FROM PV	
+				 WHERE TRN IS NOT NULL
+		 ORDER BY TRN
+	</select>
+	
+	<select id="ControlStatDAO.selectYearAllChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectYearAllChart 전체 제어권별 주행거리 차트_년도별 */
+		SELECT '전체' AS TRN, CONCAT(SUBSTRING(DRIVING_DIST_MON, 1, 4), '년') AS STERM, AVG(AUTO_DRIVING_DIST) AS ACNT
+		  FROM TB_CL_HT_AUTODRIVING
+		 WHERE 1=1		
+		   AND SUBSTRING(STND_DT, 1, 4) BETWEEN #sDate# AND #eDate#
+		 GROUP BY STERM
+		 ORDER BY STERM
+	</select>
+	
+	<select id="ControlStatDAO.selectMonCnt" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectMonCnt 1000KM 별 제어권 횟수_월별 */
+		SELECT TRN
+		       	   , SUM(CASE WHEN SMON = '01' THEN ACNT ELSE '' END) AS M01
+		       	   , SUM(CASE WHEN SMON = '02' THEN ACNT ELSE '' END) AS M02
+		       	   , SUM(CASE WHEN SMON = '03' THEN ACNT ELSE '' END) AS M03
+		       	   , SUM(CASE WHEN SMON = '04' THEN ACNT ELSE '' END) AS M04
+		       	   , SUM(CASE WHEN SMON = '05' THEN ACNT ELSE '' END) AS M05
+		       	   , SUM(CASE WHEN SMON = '06' THEN ACNT ELSE '' END) AS M06
+		       	   , SUM(CASE WHEN SMON = '07' THEN ACNT ELSE '' END) AS M07
+		       	   , SUM(CASE WHEN SMON = '08' THEN ACNT ELSE '' END) AS M08
+		       	   , SUM(CASE WHEN SMON = '09' THEN ACNT ELSE '' END) AS M09
+		       	   , SUM(CASE WHEN SMON = '10' THEN ACNT ELSE '' END) AS M10
+		       	   , SUM(CASE WHEN SMON = '11' THEN ACNT ELSE '' END) AS M11
+		       	   , SUM(CASE WHEN SMON = '12' THEN ACNT ELSE '' END) AS M12
+		       	   , ROUND(AVG(ACNT),2) AS TOT
+		  FROM (
+		        SELECT TMP_RACE_NUMBER AS TRN, SUBSTR(STND_MON,1,4) AS SYEAR, SUBSTR(STND_MON,5,2) AS SMON, KM_CHANGE_CNT AS ACNT
+		          FROM TB_ST_HT_TEMP_AUTO_MON
+		         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+				   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+				   AND STND_MON LIKE CONCAT(#sDate#, '%')		           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="ControlStatDAO.selectMonCntChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectMonCntChart 1000KM 별 제어권 횟수차트_월별*/
+         SELECT TMP_RACE_NUMBER AS TRN, CONCAT(FORMAT(DATE_FORMAT(STND_MON,''),'%m'), '월') AS STERM, KM_CHANGE_CNT AS ACNT
+          FROM TB_ST_HT_TEMP_AUTO_MON
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		   AND STND_MON LIKE CONCAT(#sDate#, '%') 
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="ControlStatDAO.selectSemiAnnualCnt" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* ControlStatDAO.selectSemiAnnualCnt 1000KM 별 제어권 횟수_반기별 */
+		WITH PV AS (
+		SELECT TMP_RACE_NUMBER AS TRN
+					, IFNULL(CONCAT(SUBSTRING(stnd_mon, 1, 4), CASE WHEN SUBSTRING(stnd_mon,  5, 2) BETWEEN '01' AND '06' THEN '01' ELSE '02' END),-1) AS SYEAR
+					, ROUND(IFNULL(AVG(KM_CHANGE_CNT), 0), 2) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY TMP_RACE_NUMBER, SYEAR	        
+		)
+		SELECT 
+				TRN,
+		 <iterate property="yearList" open="" close="" conjunction=",">
+		 	 ROUND(AVG(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END), 2) AS '$yearList[]$'
+		 </iterate>
+		  ,  ROUND(AVG(ACNT) , 2) AS TOT
+		  FROM PV	
+				 WHERE TRN IS NOT NULL
+		 GROUP BY TRN
+		 ORDER BY TRN
+	</select>
+	
+	<select id="ControlStatDAO.selectSemiAnnualCntChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectSemiAnnualCntChart 1000KM 별 제어권 횟수 차트_반기별 */
+		SELECT TMP_RACE_NUMBER AS TRN
+					, IFNULL(CONCAT(SUBSTRING(stnd_mon, 1, 4), CASE WHEN SUBSTRING(stnd_mon,  5, 2) BETWEEN '01' AND '06' THEN '전반기' ELSE '하반기' END),-1) AS STERM
+					, ROUND(IFNULL(AVG(KM_CHANGE_CNT), 0), 2) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_MON
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(stnd_mon, 1, 4) BETWEEN #sDate# AND #eDate#
+		 GROUP BY TMP_RACE_NUMBER, STERM	   		   
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="ControlStatDAO.selectYearCnt" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* ControlStatDAO.selectYearCnt 1000KM 별 제어권 횟수_년도별*/
+		WITH PV AS (
+		SELECT TMP_RACE_NUMBER AS TRN, IFNULL(STND_YEAR,-1) AS SYEAR, AVG(KM_CHANGE_CNT) AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#    
+		 GROUP BY TMP_RACE_NUMBER, STND_YEAR	        
+		)
+		SELECT 
+				TRN,
+		 <iterate property="yearList" open="" close="" conjunction=",">
+		 	 ROUND(AVG(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END), 2) AS '$yearList[]$'
+		 </iterate>
+		  ,  ROUND(AVG(ACNT) , 2) AS TOT
+		  FROM PV	
+				 WHERE TRN IS NOT NULL
+		 GROUP BY TRN
+		 ORDER BY TRN	 
+	</select>
+	
+	<select id="ControlStatDAO.selectYearCntChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectYearCntChart  1000KM 별 제어권 횟수 차트_년도별 */
+		SELECT TMP_RACE_NUMBER AS TRN, CONCAT(STND_YEAR, '년') AS STERM, KM_CHANGE_CNT AS ACNT
+		  FROM TB_ST_HT_TEMP_AUTO_YEAR
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND STND_YEAR BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="ControlStatDAO.selectMonTemp" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectMonTemp 차량별 제어권횟수별 주행거리_월별*/
+		SELECT TRN
+		       	   , SUM(CASE WHEN SMON = '01' THEN ACNT ELSE '' END) AS M01
+		       	   , SUM(CASE WHEN SMON = '02' THEN ACNT ELSE '' END) AS M02
+		       	   , SUM(CASE WHEN SMON = '03' THEN ACNT ELSE '' END) AS M03
+		       	   , SUM(CASE WHEN SMON = '04' THEN ACNT ELSE '' END) AS M04
+		       	   , SUM(CASE WHEN SMON = '05' THEN ACNT ELSE '' END) AS M05
+		       	   , SUM(CASE WHEN SMON = '06' THEN ACNT ELSE '' END) AS M06
+		       	   , SUM(CASE WHEN SMON = '07' THEN ACNT ELSE '' END) AS M07
+		       	   , SUM(CASE WHEN SMON = '08' THEN ACNT ELSE '' END) AS M08
+		       	   , SUM(CASE WHEN SMON = '09' THEN ACNT ELSE '' END) AS M09
+		       	   , SUM(CASE WHEN SMON = '10' THEN ACNT ELSE '' END) AS M10
+		       	   , SUM(CASE WHEN SMON = '11' THEN ACNT ELSE '' END) AS M11
+		       	   , SUM(CASE WHEN SMON = '12' THEN ACNT ELSE '' END) AS M12
+		       	   , ROUND(AVG(ACNT),2) AS TOT
+		  FROM (
+		        SELECT
+						CHA.TMP_RACE_NUMBER AS TRN,
+						SUBSTR(CHA.DRIVING_DIST_MON, 1, 4) AS SYEAR,
+						SUBSTR(CHA.DRIVING_DIST_MON, 5, 2) AS SMON,
+						CHA.AUTO_DRIVING_DIST AS ACNT
+					FROM TB_CL_HT_AUTODRIVING CHA 
+						INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+						        ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)
+					WHERE
+					1 = 1
+					<isNotEmpty property="sKeyword">
+							   AND TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+					</isNotEmpty>
+					AND CHA.DRIVING_DIST_MON LIKE CONCAT(#sDate#, '%')           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="ControlStatDAO.selectMonTempChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectMonTempChart 차량별 제어권횟수별 주행거리_월별 */
+         SELECT CHA.TMP_RACE_NUMBER AS TRN, CONCAT(SUBSTR(CHA.DRIVING_DIST_MON, 5, 2), '월') AS STERM, CHA.AUTO_DRIVING_DIST AS ACNT
+          FROM TB_CL_HT_AUTODRIVING CHA 
+						INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+						        ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)
+         WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND CHA.TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		   AND CHA.DRIVING_DIST_MON LIKE CONCAT(#sDate#, '%') 
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="ControlStatDAO.selectSemiAnnualTemp" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* ControlStatDAO.selectSemiAnnualTemp 차량별 제어권횟수별 주행거리_반기별 */
+		WITH PV AS (
+					SELECT
+						CHA.TMP_RACE_NUMBER AS TRN ,
+						IFNULL(CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4), CASE WHEN SUBSTRING(CHA.DRIVING_DIST_MON, 5, 2) BETWEEN '01' AND '06' THEN '01' ELSE '02' END),-1) AS SYEAR ,
+						ROUND(IFNULL(AVG(CHA.AUTO_DRIVING_DIST), 0), 2) AS ACNT
+					FROM TB_CL_HT_AUTODRIVING CHA 
+							INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+							        ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND CHA.TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY TRN, SYEAR	        
+		)
+		SELECT 
+				TRN,
+		 <iterate property="yearList" open="" close="" conjunction=",">
+		 	 ROUND(AVG(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END), 2) AS '$yearList[]$'
+		 </iterate>
+		  ,  ROUND(AVG(ACNT) , 2) AS TOT
+		  FROM PV	
+				 WHERE TRN IS NOT NULL
+		 GROUP BY TRN
+		 ORDER BY TRN	 
+	</select>	
+	
+	<select id="ControlStatDAO.selectSemiAnnualTempChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectSemiAnnualTempChart 차량별 제어권횟수별 주행거리 차트_반기별 */
+		SELECT CHA.TMP_RACE_NUMBER AS TRN
+					, IFNULL(CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4), CASE WHEN SUBSTRING(CHA.DRIVING_DIST_MON, 5, 2) BETWEEN '01' AND '06' THEN '전반기' ELSE '하반기' END),-1) AS STERM
+					, ROUND(IFNULL(AVG(CHA.AUTO_DRIVING_DIST), 0), 2) AS ACNT
+			FROM TB_CL_HT_AUTODRIVING CHA 
+					INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+					        ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)
+					 WHERE 1=1		
+		<isNotEmpty property="sKeyword">
+		   AND CHA.TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#
+		 GROUP BY STERM, TRN	 
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="ControlStatDAO.selectYearTemp" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* ControlStatDAO.selectYearTemp 차량별 제어권횟수별 주행거리_년도별*/
+		WITH PV AS (
+		SELECT
+				CHA.TMP_RACE_NUMBER AS TRN,
+				IFNULL(SUBSTR(CHA.DRIVING_DIST_MON, 1, 4),-1) AS SYEAR,
+				AVG(CHA.AUTO_DRIVING_DIST) AS ACNT
+			FROM TB_CL_HT_AUTODRIVING CHA 
+					INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+					        ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)
+		 WHERE 1=1
+		<isNotEmpty property="sKeyword">
+		   AND CHA.TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY TRN, SYEAR   
+		)
+		SELECT 
+				TRN,
+		 <iterate property="yearList" open="" close="" conjunction=",">
+		 	 ROUND(AVG(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END), 2) AS '$yearList[]$'
+		 </iterate>
+		  ,  ROUND(AVG(ACNT) , 2) AS TOT
+		  FROM PV	
+				 WHERE TRN IS NOT NULL
+		 GROUP BY TRN
+		 ORDER BY TRN	 
+	</select>			
+	
+	<select id="ControlStatDAO.selectYearTempChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectYearTempChart 차량별 제어권횟수별 주행거리 차트_년도별 */
+		SELECT CHA.TMP_RACE_NUMBER AS TRN, CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4), '년') AS STERM, CHA.AUTO_DRIVING_DIST AS ACNT
+		  FROM TB_CL_HT_AUTODRIVING CHA 
+					INNER JOIN TB_CL_HT_CTRCHANGE CHC 
+					        ON(CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER AND CHA.DRIVING_DIST_MON = CHC.CTR_CHANGE_MON)
+					 WHERE 1=1		
+		<isNotEmpty property="sKeyword">
+		   AND CHA.TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+	
+<select id="ControlStatDAO.selectMonUser" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectMonUser 기관별 제어권횟수 주행거리_월별 */
+		SELECT TRN
+		       	   , SUM(CASE WHEN SMON = '01' THEN ACNT ELSE '' END) AS M01
+		       	   , SUM(CASE WHEN SMON = '02' THEN ACNT ELSE '' END) AS M02
+		       	   , SUM(CASE WHEN SMON = '03' THEN ACNT ELSE '' END) AS M03
+		       	   , SUM(CASE WHEN SMON = '04' THEN ACNT ELSE '' END) AS M04
+		       	   , SUM(CASE WHEN SMON = '05' THEN ACNT ELSE '' END) AS M05
+		       	   , SUM(CASE WHEN SMON = '06' THEN ACNT ELSE '' END) AS M06
+		       	   , SUM(CASE WHEN SMON = '07' THEN ACNT ELSE '' END) AS M07
+		       	   , SUM(CASE WHEN SMON = '08' THEN ACNT ELSE '' END) AS M08
+		       	   , SUM(CASE WHEN SMON = '09' THEN ACNT ELSE '' END) AS M09
+		       	   , SUM(CASE WHEN SMON = '10' THEN ACNT ELSE '' END) AS M10
+		       	   , SUM(CASE WHEN SMON = '11' THEN ACNT ELSE '' END) AS M11
+		       	   , SUM(CASE WHEN SMON = '12' THEN ACNT ELSE '' END) AS M12
+		       	   , ROUND(AVG(ACNT),2) AS TOT
+		  FROM (
+		        SELECT FN_CT_GET_AGENCY_NAME(CHT.USER_ID) AS TRN, SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4) AS SYEAR, SUBSTRING(CHA.DRIVING_DIST_MON, 5, 2) AS SMON, CHA.AUTO_DRIVING_DIST AS ACNT
+		           FROM TB_CL_HT_AUTODRIVING CHA, TB_CM_HT_TEMPOPER CHT
+		         WHERE 1=1
+		         AND CHA.TMP_RACE_NUMBER = CHT.TMP_RACE_NUMBER
+		<isNotEmpty property="sKeyword">
+				   AND FN_CT_GET_AGENCY_NAME(CHT.USER_ID) LIKE CONCAT'%', #sKeyword#, '%')
+		</isNotEmpty>
+				   AND CHA.DRIVING_DIST_MON LIKE CONCAT(#sDate#, '%')		           
+		       ) X
+		 GROUP BY TRN
+		 ORDER BY TRN 
+	</select>
+	
+	<select id="ControlStatDAO.selectMonUserChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectMonUserChart  기관별 제어권횟수 주행거리_월별*/
+         SELECT CHA.TMP_RACE_NUMBER AS TRN, CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4), '월') AS STERM, CHC.CTR_CHANGE_CNT AS ACNT
+            FROM TB_CL_HT_AUTODRIVING CHA, TB_CL_HT_CTRCHANGE CHC
+         WHERE 1=1
+         AND CHA.TMP_RACE_NUMBER = CHC.TMP_RACE_NUMBER
+		<isNotEmpty property="sKeyword">
+		   AND CHA.TMP_RACE_NUMBER LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>
+		   AND CHA.DRIVING_DIST_MON LIKE CONCAT(#sDate#, '%') 
+		 ORDER BY STERM, TRN
+	</select>
+	
+	<select id="ControlStatDAO.selectSemiAnnualUser" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* ControlStatDAO.selectSemiAnnualUser 기관별 제어권횟수 주행거리_반기별 */
+		WITH PV AS (
+		SELECT FN_CT_GET_AGENCY_NAME(CHT.USER_ID) AS TRN
+				   , IFNULL(CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4), CASE WHEN SUBSTRING(CHA.DRIVING_DIST_MON, 5, 2) BETWEEN '01' AND '06' THEN '01' ELSE '02' END),-1) AS SYEAR
+				   , ROUND(IFNULL(AVG(CHA.AUTO_DRIVING_DIST), 0), 2) AS ACNT
+		  FROM TB_CL_HT_AUTODRIVING CHA, TB_CM_HT_TEMPOPER CHT
+		 WHERE 1=1
+		 AND CHA.TMP_RACE_NUMBER = CHT.TMP_RACE_NUMBER
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(CHT.USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY FN_CT_GET_AGENCY_NAME(CHT.USER_ID), SYEAR	        
+		)
+		SELECT 
+				TRN,
+		 <iterate property="yearList" open="" close="" conjunction=",">
+		 	 ROUND(AVG(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END), 2) AS '$yearList[]$'
+		 </iterate>
+		  ,  ROUND(AVG(ACNT) , 2) AS TOT
+		  FROM PV	
+				 WHERE TRN IS NOT NULL
+		 GROUP BY TRN
+		 ORDER BY TRN	 
+	</select>
+	
+	<select id="ControlStatDAO.selectSemiAnnualUserChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectSemiAnnualUserChart  기관별 제어권횟수 주행거리 차트_반기별 */
+		SELECT FN_CT_GET_AGENCY_NAME(CHT.USER_ID) AS TRN
+				   , IFNULL(CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4), CASE WHEN SUBSTRING(CHA.DRIVING_DIST_MON, 5, 2) BETWEEN '01' AND '06' THEN '전반기' ELSE '후반기' END),-1) AS STERM
+				   , ROUND(IFNULL(AVG(CHA.AUTO_DRIVING_DIST), 0), 2) AS ACNT
+		  FROM TB_CL_HT_AUTODRIVING CHA,  TB_CM_HT_TEMPOPER CHT
+		 WHERE 1=1
+		 AND CHA.TMP_RACE_NUMBER = CHT.TMP_RACE_NUMBER
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(CHT.USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTR(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#
+		 GROUP BY CHT.USER_ID, STERM	   		   
+		 ORDER BY STERM, TRN		 
+	</select>
+	
+	<select id="ControlStatDAO.selectYearUser" parameterClass="paramMap" resultClass="egovMap" remapResults="true">
+		/* ControlStatDAO.selectYearUser  기관별 제어권횟수 주행거리_년도별*/
+		WITH PV AS (
+		SELECT FN_CT_GET_AGENCY_NAME(USER_ID) AS TRN, IFNULL(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4),-1) AS SYEAR, AVG(CHA.AUTO_DRIVING_DIST) AS ACNT
+		  FROM TB_CL_HT_AUTODRIVING CHA,  TB_CM_HT_TEMPOPER CHT
+		 WHERE 1=1
+		 AND CHA.TMP_RACE_NUMBER = CHT.TMP_RACE_NUMBER
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(CHT.USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#    
+		 GROUP BY FN_CT_GET_AGENCY_NAME(CHT.USER_ID), SYEAR	        
+		)
+		SELECT 
+				TRN,
+		 <iterate property="yearList" open="" close="" conjunction=",">
+		 	 ROUND(AVG(CASE WHEN  SYEAR = '$yearList[]$' THEN ACNT ELSE '' END), 2) AS '$yearList[]$'
+		 </iterate>
+		  ,  ROUND(AVG(ACNT) , 2) AS TOT
+		  FROM PV	
+				 WHERE TRN IS NOT NULL
+		 GROUP BY TRN
+		 ORDER BY TRN	
+	</select>	
+	
+	<select id="ControlStatDAO.selectYearUserChart" parameterClass="paramMap" resultClass="egovMap">
+		/* ControlStatDAO.selectYearUserChart */
+		SELECT FN_CT_GET_AGENCY_NAME(CHT.USER_ID) AS TRN, CONCAT(SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4),'년') AS STERM, CHA.AUTO_DRIVING_DIST AS ACNT
+		   FROM TB_CL_HT_AUTODRIVING CHA,  TB_CM_HT_TEMPOPER CHT
+		 WHERE 1=1
+		 AND CHA.TMP_RACE_NUMBER = CHT.TMP_RACE_NUMBER
+		<isNotEmpty property="sKeyword">
+		   AND FN_CT_GET_AGENCY_NAME(CHT.USER_ID) LIKE CONCAT('%', #sKeyword#, '%')
+		</isNotEmpty>		
+		   AND SUBSTRING(CHA.DRIVING_DIST_MON, 1, 4) BETWEEN #sDate# AND #eDate#
+		 ORDER BY STERM, TRN
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+	
+
+	
+	
+	
+
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	<!-- 반기추가 -->
+		
+	
+		
+	
+	
+	
+	
+	
+	
+	
+
+		
+		
+</sqlMap>
