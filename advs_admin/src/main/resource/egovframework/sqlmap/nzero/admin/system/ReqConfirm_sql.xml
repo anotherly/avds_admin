@@ -41,9 +41,19 @@
 		)
 		SELECT REQ_TP, REQ_TP_NM, REQ_ID, USER_ID, USER_NM, AGENCY_CD, REG_DATE, STATUS_CD, STATUS_NM
 		  FROM REQ_LIST
-		<isNotEmpty prepend="WHERE" property="sReqType">  
+		WHERE 1=1
+		<isNotEmpty prepend="AND" property="sReqType">  
 		 	REQ_TP = #sReqType#
 		</isNotEmpty> 
+		<isNotEmpty prepend="AND" property="sUserNm">
+			USER_NM LIKE CONCAT('%', #sUserNm#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sOrg">
+			AGENCY_CD LIKE CONCAT('%', #sOrg#, '%')
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="sReqFlag">
+			STATUS_CD = #sReqFlag#
+		</isNotEmpty>
 		 ORDER BY REG_DATE DESC         
 	</select>
 

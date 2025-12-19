@@ -29,6 +29,7 @@
 		
 			<div class="d-flex align-center posi_r">
 				<fieldset class="d-flex align-center">
+				
 					<span class="tit el-txt fw-500">승인요청 구분</span>
 					<div class="el-form custom-sel ml-10">
 						<select class="el-form__sel" id="sReqType" name="sReqType">
@@ -38,6 +39,33 @@
 							<option value="A">권한위임요청</option>
 						</select>
 					</div>
+					
+					<fieldset class="d-flex align-center ml-20">
+						<span class="tit el-txt fw-500">요청자명</span>
+						<div class="el-form custom-input ml-10">
+							<input type="text" class="el-form__input el-form-width--l" id="sUserNm" name="sUserNm" value="" onkeypress="if(event.keyCode==13) {fn_search(); return false;}">
+						</div>
+					</fieldset>
+					
+					<fieldset class="d-flex align-center ml-20">
+						<span class="tit el-txt fw-500">기관명</span>
+						<div class="el-form custom-input ml-10">
+							<input type="text" class="el-form__input el-form-width--l" id="sOrg" name="sOrg" value="" onkeypress="if(event.keyCode==13) {fn_search(); return false;}">
+						</div>
+					</fieldset>
+					
+					<fieldset class="d-flex align-center ml-20">
+						<span class="tit el-txt fw-500">상태</span>
+						<div class="el-form custom-sel ml-10">
+							<select class="el-form__sel" id="sReqFlag" name="sReqFlag">
+								<option value="">[선택 ]</option>
+								<option value="101">승인요청</option>
+								<option value="102">승인완료</option>
+								<option value="103">승인취소</option>
+							</select>
+						</div>
+					</fieldset>
+
 		    	</fieldset>
 		    	<div class="contBtn2">
 					<button type="button" onclick="fn_save()" class="btn" title="저장">저장</button>
@@ -322,7 +350,10 @@ function fn_search(selectNode) {
 	document.detailForm.reset();
 
 	var searchData = {
-		sReqType: $("#sReqType").val()
+		sReqType: $("#sReqType").val(),
+		sUserNm: $("#sUserNm").val(),
+		sOrg: $("#sOrg").val(),
+		sReqFlag: $("#sReqFlag").val()
 	};
 	$("#gridList").jqGrid("setGridParam", {datatype: "json", postData : searchData}).trigger("reloadGrid");
 }
