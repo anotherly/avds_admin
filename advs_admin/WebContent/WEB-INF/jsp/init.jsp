@@ -15,6 +15,11 @@
     <script type="text/javascript" src="/js/common.js"></script>
     <script type="text/javascript" src="resource/js/main.js"></script>
     <title>자율주행 데이터 공유센터</title>
+    
+	<script type="text/javascript">
+	console.log("이닛화면");
+   	</script>
+   
 </head>
 	<body>
 		        <section class="container">

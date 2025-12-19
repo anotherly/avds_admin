@@ -16,11 +16,11 @@ var colModelMast = [
 	{ label: '제목',			name: 'bTitle',				width: 300 },
 	{ label: '등록일시',		name: 'regDateView',		width: 150,	align: "center" },
 	{ label: '파일유형',		name: 'fileTypeView',		width: 100,	align: "center" },
-	{ label: '파일명',			name: 'saveNm',				width: 300 },
+//	{ label: '파일명',			name: 'saveNm',				width: 300 },
 	{ label: '파일사이즈',		name: 'fileSizeView',		width: 100,	align: "center" },
-	{ label: '주행모드',		name: 'drivingModeView',	width: 100,	align: "center" },
+	/* { label: '주행모드',		name: 'drivingModeView',	width: 100,	align: "center" },
 	{ label: '기상상황',		name: 'weatherView',		width: 80,	align: "center" },
-	{ label: '도로유형',		name: 'roadTypeCdView',		width: 100,	align: "center" },
+	{ label: '도로유형',		name: 'roadTypeCdView',		width: 100,	align: "center" }, */
 	{ label: '차량번호',		name: 'vehicleId',		width: 100,	align: "center" }
 ];
 

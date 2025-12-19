@@ -246,3 +246,32 @@
   font-weight: 500;
   font-size: 1rem;
 }
+
+/* ================================
+   하단 jQuery UI Tabs - Util 영역
+   ================================ */
+
+#tabs {
+    display: flex;
+    align-items: center;
+}
+
+#tabs > ul {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.tabs-util {
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-right: 8px;
+}
+
+.btn-tab-util {
+    height: 26px;
+    padding: 0 10px;
+    font-size: 12px;
+    cursor: pointer;
+}
+

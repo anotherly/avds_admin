@@ -16,6 +16,7 @@
     <script type="text/javascript" src="<c:url value='/js/jquery-ui-1.12.1.custom/jquery-ui.js' />"></script>
     <script type="text/javascript" src="new/resource/js/main.js"></script>
     <script type="text/javascript">
+    	console.log("메인화면");
     	function fn_logOut(){
 			if (confirm("로그아웃 하시겠습니까?")) {
 				location.href = "/actionLogout.do";

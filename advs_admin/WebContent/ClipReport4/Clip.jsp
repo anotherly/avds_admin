@@ -28,7 +28,7 @@ response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 //request.getSession().setAttribute("ClipReport-SessionList-Allow", false);
 
 String passName = request.getParameter("ClipID");
-
+System.out.println("C:git-workspace avds_home advs_home WebContent WEB-INF clipreport4의 clip.jsp 여 기 는 들 어 오 니?");
 if(null != passName){
 	if("R01".equals(passName)){
 		NewReport newReport = new NewReport();
